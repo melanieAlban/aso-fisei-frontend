@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"c:/Users/Melan/OneDrive/Documents/SOFTWARE\" && find . -maxdepth 2 -iname \"*backend*\" -o -iname \"*aso*\" 2>/dev/null | head -50)",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/**)",
+      "Bash(cd \"c:\\\\Users\\\\Melan\\\\OneDrive\\\\Documents\\\\SOFTWARE\\\\aso-fisei\\\\asociacion-backend\" && find src -iname \"*auth*\" -o -iname \"*transform*\" -o -iname \"*jwt*\" | grep -v node_modules)",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/**)",
+      "Bash(cd \"c:\\\\Users\\\\Melan\\\\OneDrive\\\\Documents\\\\SOFTWARE\\\\aso-fisei\\\\asociacion-backend\" && find src/usuarios -type f | grep -v node_modules)",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/src/usuarios/infrastructure/**)",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/src/usuarios/infrastructure/dto/**)",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/src/usuarios/application/**)",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/src/shared/infraestructure/interceptors/**)",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/src/usuarios/infrastructure/auth/**)",
+      "Bash(cd \"c:\\\\Users\\\\Melan\\\\OneDrive\\\\Documents\\\\SOFTWARE\\\\aso-fisei\\\\asociacion-backend\" && grep -rn \"TransformInterceptor\" src main.ts 2>/dev/null; echo \"---main---\"; find src -maxdepth 1 -iname \"main.ts\"; find . -maxdepth 1 -iname \"main.ts\")",
+      "Bash(cd \"c:\\\\Users\\\\Melan\\\\OneDrive\\\\Documents\\\\SOFTWARE\\\\aso-fisei\\\\asociacion-backend\" && find . -iname \"seed*\" -not -path \"*/node_modules/*\"; find . -iname \"*.prisma\" -not -path \"*/node_modules/*\")",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/src/usuarios/domain/**)",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/prisma/**)",
+      "Read(//c/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/src/**)",
+      "Bash(cd \"c:\\\\Users\\\\Melan\\\\OneDrive\\\\Documents\\\\SOFTWARE\\\\aso-fisei\\\\asociacion-backend\" && grep -n \"prefix\\\\|Global\" src/app.module.ts | head -20)",
+      "Bash(cd \"c:/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend\" && npm run build 2>&1 | tail -80)",
+      "Bash(SCRATCH=\"/c/Users/Melan/AppData/Local/Temp/claude/c--Users-Melan-OneDrive-Documents-SOFTWARE-aso-fisei-asociacion-frontend/7bf864b4-686c-44a5-9f64-c5bfdfa461f7/scratchpad\" *)",
+      "Read(//c/Users/Melan/AppData/Local/Temp/claude/c--Users-Melan-OneDrive-Documents-SOFTWARE-aso-fisei-asociacion-frontend/7bf864b4-686c-44a5-9f64-c5bfdfa461f7/scratchpad/**)",
+      "Bash(npx ng *)",
+      "Bash(cd \"c:/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend\" && ls *.yml *.yaml 2>/dev/null; cat package.json | grep -A3 '\"scripts\"' | head -5; echo \"---env---\"; ls -la .env* 2>/dev/null; echo \"---docker---\"; docker ps 2>&1 | head -10)",
+      "Bash(cat \"c:/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/.env\" | grep -v PASSWORD | grep -v SECRET)",
+      "Bash(npm run *)",
+      "Bash(echo \"started pid $!\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/api/v1/auth/login --max-time 3)",
+      "Bash(cd \"c:/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend\" && npm run start:dev)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/api/v1/auth/login -X POST -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(rm -rf \"c:/Users/Melan/OneDrive/Documents/SOFTWARE/aso-fisei/asociacion-backend/dist\" *)",
+      "Bash(node dist/src/main.js)",
+      "Bash(curl -s -X POST http://localhost:3000/api/v1/auth/login -H \"Content-Type: application/json\" -d '{\"usuario\":\"admin\",\"password\":\"Admin123!\"}' --max-time 5)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:4200/login --max-time 5)",
+      "Bash(npx jest *)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Melan\\OneDrive\\Documents\\SOFTWARE\\aso-fisei\\asociacion-backend\\src\\usuarios\\domain",
+      "c:\\Users\\Melan\\OneDrive\\Documents\\SOFTWARE\\aso-fisei\\asociacion-backend\\src\\usuarios\\infrastructure",
+      "c:\\Users\\Melan\\OneDrive\\Documents\\SOFTWARE\\aso-fisei\\asociacion-backend\\src\\usuarios\\application",
+      "c:\\Users\\Melan\\OneDrive\\Documents\\SOFTWARE\\aso-fisei\\asociacion-backend\\dist"
+    ]
+  }
+}

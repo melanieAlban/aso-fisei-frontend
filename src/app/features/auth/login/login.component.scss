@@ -1,0 +1,356 @@
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gridPan {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 44px 44px;
+  }
+}
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  background: #F4F5F7;
+}
+
+/* ===== BRAND PANEL ===== */
+.brand-panel {
+  position: relative;
+  flex: 1 1 46%;
+  max-width: 620px;
+  background: #0A1638;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px;
+  color: #FDFDF2;
+}
+
+.brand-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(18, 216, 151, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 216, 151, .06) 1px, transparent 1px);
+  background-size: 44px 44px;
+  animation: gridPan 12s linear infinite;
+}
+
+.brand-glow {
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(18, 216, 151, .22), transparent 68%);
+  top: -140px;
+  right: -140px;
+  filter: blur(6px);
+}
+
+.brand-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: block;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
+}
+
+.brand-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.brand-name {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: .02em;
+  line-height: 1;
+}
+
+.brand-tag {
+  font-weight: 600;
+  font-size: 12px;
+  color: #12D897;
+  letter-spacing: .14em;
+  line-height: 1;
+}
+
+.brand-copy {
+  position: relative;
+  max-width: 400px;
+}
+
+.brand-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #12D897;
+  background: rgba(18, 216, 151, .1);
+  border: 1px solid rgba(18, 216, 151, .25);
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 22px;
+}
+
+.brand-copy h1 {
+  font-size: 38px;
+  line-height: 1.12;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -.02em;
+}
+
+.brand-copy p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(253, 253, 242, .62);
+  margin: 0;
+}
+
+.brand-footer {
+  position: relative;
+  display: flex;
+  gap: 26px;
+  color: rgba(253, 253, 242, .5);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.brand-footer .dot {
+  color: rgba(253, 253, 242, .25);
+}
+
+/* ===== FORM PANEL ===== */
+.form-panel {
+  flex: 1 1 54%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 400px;
+  animation: floatUp .5s ease both;
+}
+
+.mobile-logo {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.mobile-logo img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: block;
+}
+
+.mobile-title {
+  line-height: 1.1;
+  text-align: left;
+}
+
+.form-card h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  letter-spacing: -.02em;
+  color: #0A1638;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #5B6478;
+  margin: 0 0 30px;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0A1638;
+  margin-bottom: 7px;
+}
+
+.input-wrap {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9AA2B1;
+  display: flex;
+  pointer-events: none;
+}
+
+input.login-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px 0 42px !important;
+  font: 500 14.5px/1 'Plus Jakarta Sans', sans-serif;
+  color: #0A1638;
+  background: #fff !important;
+  border: 1.5px solid #E1E4EA !important;
+  border-radius: 12px !important;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+input.login-input:focus {
+  outline: none;
+  border-color: #12D897 !important;
+  box-shadow: 0 0 0 4px rgba(18, 216, 151, .14) !important;
+}
+
+input.login-input--password {
+  padding-right: 44px !important;
+}
+
+.password-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 7px;
+}
+
+.forgot-link {
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9AA2B1;
+  padding: 8px;
+  display: flex;
+  border-radius: 8px;
+}
+
+.error-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #C0392B;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-top: 2px;
+}
+
+.error-box svg {
+  flex: none;
+}
+
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 16px 0 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-row input {
+  width: 17px;
+  height: 17px;
+  accent-color: #0E9E70;
+  cursor: pointer;
+}
+
+.remember-row span {
+  font-size: 13.5px;
+  color: #5B6478;
+  font-weight: 500;
+}
+
+:host ::ng-deep .submit-btn {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  background: #12D897;
+  color: #062B1F;
+  font: 700 15px 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  box-shadow: 0 6px 16px rgba(18, 216, 151, .32);
+  justify-content: center;
+}
+
+:host ::ng-deep .submit-btn:not(:disabled):hover {
+  background: #0BB37E;
+  transform: translateY(-1px);
+}
+
+:host ::ng-deep .submit-btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+:host ::ng-deep .submit-btn:disabled {
+  cursor: not-allowed;
+  opacity: .8;
+}
+
+.help-text {
+  text-align: center;
+  font-size: 12.5px;
+  color: #9AA2B1;
+  margin: 28px 0 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .brand-panel {
+    display: none;
+  }
+
+  .mobile-logo {
+    display: flex;
+  }
+}
