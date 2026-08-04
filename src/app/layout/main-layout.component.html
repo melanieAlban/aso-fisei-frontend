@@ -1,0 +1,14 @@
+<div class="layout">
+  <app-sidebar [open]="drawerOpen()" (cerrar)="drawerOpen.set(false)" />
+
+  @if (drawerOpen()) {
+    <div class="backdrop" (click)="drawerOpen.set(false)"></div>
+  }
+
+  <div class="main">
+    <app-topbar (abrirMenu)="drawerOpen.set(true)" />
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
