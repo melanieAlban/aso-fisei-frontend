@@ -28,8 +28,9 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios',
-        loadComponent: () =>
-          import('./features/usuarios/usuarios.component').then((m) => m.UsuariosComponent),
+        loadChildren: () =>
+          import('./features/usuarios/usuarios.routes').then((m) => m.USUARIOS_ROUTES),
+        canActivate: [permisoGuard(['Admin'])],
       },
       {
         path: 'inventario',

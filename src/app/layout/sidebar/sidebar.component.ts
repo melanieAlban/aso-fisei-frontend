@@ -37,7 +37,7 @@ export class SidebarComponent {
   readonly rolPrincipal = computed(() => this.currentUser()?.roles[0] ?? 'Usuario');
 
   readonly navItems: NavItem[] = [
-    { label: 'Usuarios y Roles', route: '/usuarios', icon: 'usuarios' },
+    { label: 'Usuarios y Roles', route: '/usuarios', icon: 'usuarios', soloAdmin: true },
     { label: 'Inventario', route: '/inventario', icon: 'inventario' },
     { label: 'Ventas', route: '/ventas', icon: 'ventas' },
     { label: 'Caja / Fondo', route: '/caja', icon: 'caja', soloAdmin: true },

@@ -1,0 +1,245 @@
+:host {
+  display: block;
+  padding: 24px;
+  color: #0a1638;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: #5b6478;
+  }
+}
+
+.buscador {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #e1e4ea;
+  border-radius: 11px;
+  padding: 10px 14px;
+  width: 240px;
+
+  i {
+    color: #9aa2b1;
+    font-size: 14px;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    font: 500 13.5px 'Plus Jakarta Sans', sans-serif;
+    color: #0a1638;
+    background: none;
+    width: 100%;
+  }
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .tarjeta {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 15px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .etiqueta {
+    font-size: 12.5px;
+    color: #5b6478;
+    font-weight: 600;
+  }
+
+  .valor {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .valor-activo {
+    color: #0a7d58;
+  }
+
+  .valor-inactivo {
+    color: #c0392b;
+  }
+}
+
+.toolbar {
+  display: flex;
+  margin-bottom: 16px;
+
+  :host ::ng-deep .p-button {
+    margin-left: auto;
+  }
+}
+
+.nombre-celda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #12d897, #0e9e70);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: #062b1f;
+  text-transform: uppercase;
+}
+
+.nombre-texto {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.roles-celda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.sin-rol {
+  font-size: 12px;
+  color: #9aa2b1;
+  font-weight: 600;
+}
+
+.btn-roles,
+.btn-menu {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 1px dashed #d4d8e0;
+  background: #fff;
+  color: #9aa2b1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  padding: 0;
+  font-size: 11px;
+}
+
+.btn-menu {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid #eaecef;
+  color: #5b6478;
+}
+
+.ultimo-acceso {
+  font-size: 12.5px;
+  color: #9aa2b1;
+  font-weight: 500;
+}
+
+.acciones-celda {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.vacio {
+  text-align: center;
+  padding: 44px 20px;
+  color: #9aa2b1;
+  font-size: 14px;
+}
+
+.roles-popover {
+  padding: 4px;
+  min-width: 190px;
+
+  .titulo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #9aa2b1;
+    margin-bottom: 10px;
+  }
+
+  .rol-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 4px;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #0a1638;
+
+    input {
+      width: 17px;
+      height: 17px;
+      accent-color: #12d897;
+      cursor: pointer;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .usuarios-table .p-datatable-thead > tr > th {
+    background: #fff;
+    color: #9aa2b1;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .rol-tag {
+    background: rgba(10, 22, 56, 0.08);
+    color: #0a1638;
+    font-weight: 700;
+  }
+
+  .p-tag {
+    border-radius: 999px;
+  }
+}
+
+@media (max-width: 640px) {
+  .buscador {
+    display: none;
+  }
+
+  .resumen {
+    grid-template-columns: 1fr;
+  }
+}
