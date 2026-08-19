@@ -1,0 +1,39 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '430px' }"
+  [header]="esEdicion() ? 'Editar producto' : 'Nuevo producto'"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <p class="subtitulo">
+    @if (!esEdicion()) {
+      Se crea con stock en 0 · registra una compra para agregar existencias
+    }
+  </p>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="producto-form">
+    <div class="campo">
+      <label for="nombre">Nombre del producto</label>
+      <input id="nombre" type="text" pInputText formControlName="nombre" placeholder="Ej. Llavero FISEI" class="w-full" />
+    </div>
+
+    <div class="campo">
+      <label for="precioVenta">Precio de venta</label>
+      <div class="campo-monto">
+        <span>$</span>
+        <input id="precioVenta" type="text" inputmode="decimal" formControlName="precioVenta" placeholder="0.00" />
+      </div>
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button [label]="esEdicion() ? 'Guardar cambios' : 'Crear producto'" [loading]="cargando()" type="submit" />
+    </div>
+  </form>
+</p-dialog>

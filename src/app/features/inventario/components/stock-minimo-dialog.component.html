@@ -1,0 +1,28 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  header="Umbral de stock mínimo"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <p class="subtitulo">Aplica a todos los productos del inventario</p>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <div class="campo">
+      <label for="valorMinimo">Cantidad mínima de unidades</label>
+      <input id="valorMinimo" type="text" inputmode="numeric" formControlName="valorMinimo" placeholder="10" class="input-plain" />
+      <p class="ayuda">Productos con stock igual o menor a este valor se marcan como "Bajo stock".</p>
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Guardar umbral" [loading]="cargando()" type="submit" />
+    </div>
+  </form>
+</p-dialog>

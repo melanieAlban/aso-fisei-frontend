@@ -34,10 +34,8 @@ export const routes: Routes = [
       },
       {
         path: 'inventario',
-        loadComponent: () =>
-          import('./features/inventario/inventario.component').then(
-            (m) => m.InventarioComponent,
-          ),
+        loadChildren: () =>
+          import('./features/inventario/inventario.routes').then((m) => m.INVENTARIO_ROUTES),
       },
       {
         path: 'ventas',
