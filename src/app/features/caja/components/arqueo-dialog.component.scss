@@ -1,0 +1,177 @@
+.form,
+.resultado {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 12px;
+
+  label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0a1638;
+  }
+}
+
+.campo-monto {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 52px;
+  padding: 0 14px;
+  border: 1.5px solid #e1e4ea;
+  border-radius: 12px;
+  background: #fcfcfd;
+
+  span {
+    font-size: 17px;
+    font-weight: 800;
+    color: #9aa2b1;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    font: 800 20px 'Plus Jakarta Sans', sans-serif;
+    color: #0a1638;
+    width: 100%;
+  }
+}
+
+.titulo-seccion {
+  font-size: 14px;
+  font-weight: 800;
+  margin: 8px 0 3px;
+}
+
+.ayuda {
+  font-size: 12px;
+  color: #9aa2b1;
+  margin: 0 0 14px;
+}
+
+.fondo-cambio {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f4f6f8;
+  border-radius: 11px;
+  padding: 12px 15px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5b6478;
+  margin-bottom: 6px;
+
+  span:last-child {
+    font-size: 15px;
+    color: #0a1638;
+  }
+}
+
+.error {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+
+  :host ::ng-deep .p-button {
+    flex: 1;
+  }
+}
+
+.resultado-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.resultado-card {
+  background: #f7f8fa;
+  border-radius: 13px;
+  padding: 15px;
+}
+
+.resultado-titulo {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #5b6478;
+  margin-bottom: 10px;
+}
+
+.resultado-linea {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #5b6478;
+
+  span:last-child {
+    font-weight: 700;
+    color: #0a1638;
+  }
+}
+
+.resultado-diff {
+  padding-top: 8px;
+  border-top: 1px solid #e7e9ee;
+  font-size: 14px;
+
+  span {
+    font-weight: 800 !important;
+    color: #0a7d58 !important;
+  }
+
+  &.negativo span {
+    color: #c0392b !important;
+  }
+
+  &.positivo span {
+    color: #b8791c !important;
+  }
+}
+
+.clasificar-row {
+  display: flex;
+  gap: 9px;
+  margin-bottom: 4px;
+}
+
+.toggle {
+  flex: 1;
+  height: 44px;
+  border: 1.5px solid #e1e4ea;
+  background: #fff;
+  border-radius: 11px;
+  font: 700 13px 'Plus Jakarta Sans', sans-serif;
+  color: #5b6478;
+  cursor: pointer;
+
+  &.active {
+    background: #0a1638;
+    color: #fff;
+    border-color: #0a1638;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

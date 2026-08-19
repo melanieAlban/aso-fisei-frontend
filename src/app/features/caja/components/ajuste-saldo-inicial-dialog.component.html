@@ -1,0 +1,42 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  header="Ajustar saldo del fondo general"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <p class="subtitulo">Acción poco frecuente · requiere justificación.</p>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <div class="grid2">
+      <div class="campo">
+        <label for="montoEfectivo">Ajuste efectivo</label>
+        <div class="campo-monto">
+          <span>$</span>
+          <input id="montoEfectivo" type="text" inputmode="decimal" formControlName="montoEfectivo" placeholder="0.00" />
+        </div>
+      </div>
+      <div class="campo">
+        <label for="montoTransferencia">Ajuste transferencia</label>
+        <div class="campo-monto">
+          <span>$</span>
+          <input id="montoTransferencia" type="text" inputmode="decimal" formControlName="montoTransferencia" placeholder="0.00" />
+        </div>
+      </div>
+    </div>
+
+    <label for="justificacion">Justificación <span class="obligatorio">(obligatorio)</span></label>
+    <input id="justificacion" type="text" pInputText formControlName="justificacion" placeholder="Ej. corrección de saldo inicial mal registrado" class="w-full" />
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Guardar ajuste" [loading]="cargando()" [disabled]="bloqueado()" type="submit" />
+    </div>
+  </form>
+</p-dialog>

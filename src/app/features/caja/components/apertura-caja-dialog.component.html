@@ -1,0 +1,34 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  header="Apertura de caja"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <p class="subtitulo">Registra el fondo inicial en efectivo para comenzar el turno.</p>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <label for="fondoInicial">Fondo inicial en efectivo</label>
+    <div class="campo-monto">
+      <span>$</span>
+      <input id="fondoInicial" type="text" inputmode="decimal" formControlName="fondoInicialEfectivo" placeholder="0.00" />
+    </div>
+
+    <div class="montos-rapidos">
+      @for (m of montosRapidos; track m) {
+        <button type="button" (click)="elegirMonto(m)">${{ m }}</button>
+      }
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Abrir caja" [loading]="cargando()" type="submit" />
+    </div>
+  </form>
+</p-dialog>
