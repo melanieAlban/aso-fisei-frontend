@@ -1,0 +1,48 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '430px' }"
+  header="Registrar pérdida"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="mov-form">
+    <div class="campo">
+      <label>Producto</label>
+      @if (productoFijo(); as fijo) {
+        <div class="producto-fijo">
+          <span class="dot"></span>
+          <span class="nombre">{{ fijo.nombre }}</span>
+          <span class="stock">Stock: {{ fijo.stockActual }}</span>
+        </div>
+      } @else {
+        <select formControlName="productoId" class="select">
+          <option value="">Selecciona un producto…</option>
+          @for (p of productos(); track p.id) {
+            <option [value]="p.id">{{ p.nombre }} ({{ p.stockActual }} u)</option>
+          }
+        </select>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="cantidad">Cantidad perdida</label>
+      <input id="cantidad" type="text" inputmode="numeric" formControlName="cantidad" placeholder="0" class="input-plain" />
+    </div>
+
+    <div class="campo">
+      <label for="motivo">Motivo <span class="obligatorio">(obligatorio)</span></label>
+      <input id="motivo" type="text" pInputText formControlName="motivo" placeholder="Ej. producto dañado en bodega" class="w-full" />
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Registrar pérdida" [loading]="cargando()" type="submit" />
+    </div>
+  </form>
+</p-dialog>

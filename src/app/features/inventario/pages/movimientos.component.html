@@ -1,0 +1,83 @@
+<div class="movimientos-page">
+  <header class="page-header">
+    <a routerLink="/inventario" aria-label="Volver a Inventario" class="volver">
+      <i class="pi pi-arrow-left"></i>
+    </a>
+    <div>
+      <h1>Movimientos de inventario</h1>
+      <p>Historial de compras, pérdidas y ajustes de stock</p>
+    </div>
+  </header>
+
+  <div class="filtros">
+    <div class="campo">
+      <label>Producto</label>
+      <select [value]="fProductoId()" (change)="onFProducto($any($event.target).value)">
+        <option value="">Todos</option>
+        @for (p of productos(); track p.id) {
+          <option [value]="p.id">{{ p.nombre }}</option>
+        }
+      </select>
+    </div>
+    <div class="campo">
+      <label>Tipo de movimiento</label>
+      <select [value]="fTipo()" (change)="onFTipo($any($event.target).value)">
+        <option value="">Todos</option>
+        <option value="COMPRA">Compra</option>
+        <option value="VENTA">Venta</option>
+        <option value="PERDIDA">Pérdida</option>
+        <option value="AJUSTE">Ajuste</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label>Desde</label>
+      <input type="date" [value]="fDesde()" (change)="onFDesde($any($event.target).value)" />
+    </div>
+    <div class="campo">
+      <label>Hasta</label>
+      <input type="date" [value]="fHasta()" (change)="onFHasta($any($event.target).value)" />
+    </div>
+  </div>
+
+  @if (fTipo() || fProductoId() || fDesde() || fHasta()) {
+    <div class="filtros-activos">
+      <span>{{ filas().length }} resultados</span>
+      <button type="button" (click)="limpiarFiltros()">
+        <i class="pi pi-times"></i>
+        Limpiar filtros
+      </button>
+    </div>
+  }
+
+  <p-table [value]="filas()" [loading]="cargando()" class="movimientos-table">
+    <ng-template #header>
+      <tr>
+        <th>Producto</th>
+        <th>Tipo</th>
+        <th>Cantidad</th>
+        <th>Motivo</th>
+        <th>Usuario</th>
+        <th>Fecha</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-fila>
+      <tr>
+        <td class="celda-producto">{{ fila.producto }}</td>
+        <td>
+          <p-tag [value]="fila.tipoLabel" [style]="{ background: fila.bg, color: fila.color }" />
+        </td>
+        <td [style.color]="fila.colorCantidad" class="celda-cantidad">{{ fila.cantidadSigno }}</td>
+        <td class="celda-motivo">{{ fila.motivo }}</td>
+        <td class="celda-usuario">{{ fila.usuario }}</td>
+        <td class="celda-fecha">{{ fila.fecha | date: 'short' }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6" class="vacio">No hay movimientos que coincidan con los filtros.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

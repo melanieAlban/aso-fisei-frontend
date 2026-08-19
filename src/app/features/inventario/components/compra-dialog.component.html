@@ -1,0 +1,69 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '430px' }"
+  header="Registrar compra"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="mov-form">
+    <div class="campo">
+      <label>Producto</label>
+      @if (productoFijo(); as fijo) {
+        <div class="producto-fijo">
+          <span class="dot"></span>
+          <span class="nombre">{{ fijo.nombre }}</span>
+          <span class="stock">Stock: {{ fijo.stockActual }}</span>
+        </div>
+      } @else {
+        <select formControlName="productoId" class="select">
+          <option value="">Selecciona un producto…</option>
+          @for (p of productos(); track p.id) {
+            <option [value]="p.id">{{ p.nombre }} ({{ p.stockActual }} u)</option>
+          }
+        </select>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="cantidad">Cantidad comprada</label>
+      <input id="cantidad" type="text" inputmode="numeric" formControlName="cantidad" placeholder="0" class="input-plain" />
+    </div>
+
+    <div class="campo">
+      <label for="costoUnitario">Costo unitario</label>
+      <div class="campo-monto">
+        <span>$</span>
+        <input id="costoUnitario" type="text" inputmode="decimal" formControlName="costoUnitario" placeholder="0.00" />
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Fuente de pago <span class="hint">· genera un gasto</span></label>
+      <div class="toggle-row">
+        <button type="button" class="toggle" [class.active]="fuentePago() === 'EFECTIVO_CAJA'" (click)="elegirCaja()">Efectivo de caja</button>
+        <button type="button" class="toggle" [class.active]="fuentePago() === 'FONDO_GENERAL'" (click)="elegirFondo()">Fondo General</button>
+      </div>
+    </div>
+
+    @if (requiereMoneda()) {
+      <div class="campo">
+        <label>Moneda <span class="obligatorio">(obligatorio)</span></label>
+        <div class="toggle-row">
+          <button type="button" class="toggle" [class.active]="moneda() === 'EFECTIVO'" (click)="elegirEfectivo()">Efectivo</button>
+          <button type="button" class="toggle" [class.active]="moneda() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">Transferencia</button>
+        </div>
+      </div>
+    }
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Registrar compra" [loading]="cargando()" [disabled]="bloqueado()" type="submit" />
+    </div>
+  </form>
+</p-dialog>

@@ -1,0 +1,129 @@
+<div class="inventario-page">
+  <header class="page-header">
+    <div>
+      <h1>Inventario</h1>
+      <p>Gestión de productos y existencias</p>
+    </div>
+    <div class="buscador">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        pInputText
+        placeholder="Buscar producto…"
+        [value]="query()"
+        (input)="onBuscar($any($event.target).value)"
+      />
+    </div>
+  </header>
+
+  <section class="resumen">
+    <div class="tarjeta">
+      <span class="etiqueta">Productos registrados</span>
+      <span class="valor">{{ totalProductos() }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Valor del inventario</span>
+      <span class="valor">{{ valorInventario() | number: '1.2-2' }}</span>
+      <span class="detalle">A costo</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Alertas de stock bajo</span>
+      <span class="valor valor-alerta">{{ alertasStockBajo() }}</span>
+      <span class="detalle">Por debajo del mínimo ({{ stockMinimo() }})</span>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <button type="button" class="filtro" [class.activo]="soloPocoStock()" (click)="toggleSoloPocoStock()">
+      <i class="pi pi-exclamation-triangle"></i>
+      Solo stock bajo
+    </button>
+
+    <div class="acciones-toolbar">
+      <a routerLink="/inventario/movimientos" class="btn-secundario">
+        <i class="pi pi-clock"></i>
+        Movimientos
+      </a>
+      @if (esAdmin()) {
+        <button type="button" class="btn-secundario" aria-label="Configurar stock mínimo" (click)="stockMinVisible.set(true)">
+          <i class="pi pi-cog"></i>
+        </button>
+      }
+      @if (esAdmin()) {
+        <p-button label="Nuevo producto" icon="pi pi-plus" (onClick)="abrirCrear()" />
+      }
+      @if (puedeRegistrarCompra()) {
+        <button type="button" class="btn-secundario" (click)="abrirCompra(null)">
+          <i class="pi pi-arrow-up"></i>
+          Registrar compra
+        </button>
+      }
+      @if (esAdmin()) {
+        <button type="button" class="btn-secundario" (click)="abrirPerdida(null)">
+          <i class="pi pi-arrow-down"></i>
+          Registrar pérdida
+        </button>
+        <button type="button" class="btn-secundario" (click)="abrirAjuste(null)">
+          <i class="pi pi-sliders-h"></i>
+          Registrar ajuste
+        </button>
+      }
+    </div>
+  </div>
+
+  <p-table [value]="filas()" [loading]="cargando()" dataKey="id" class="inventario-table">
+    <ng-template #header>
+      <tr>
+        <th>Producto</th>
+        <th>Stock actual</th>
+        <th>Costo</th>
+        <th>Precio venta</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-producto>
+      <tr>
+        <td class="celda-nombre">{{ producto.nombre }}</td>
+        <td>
+          <span class="stock" [style.color]="estado(producto).color">{{ producto.stockActual }}</span>
+          <span class="stock-min"> / mín {{ stockMinimo() }}</span>
+        </td>
+        <td class="celda-costo">{{ producto.costoUnitario | number: '1.2-2' }}</td>
+        <td class="celda-precio">{{ producto.precioVenta | number: '1.2-2' }}</td>
+        <td>
+          <p-tag [value]="estado(producto).label" [style]="{ background: estado(producto).bg, color: estado(producto).color }" />
+        </td>
+        <td class="acciones-celda">
+          @if (accionesMenu().length > 0 || esAdmin() || puedeRegistrarCompra()) {
+            <button
+              type="button"
+              class="btn-menu"
+              aria-label="Acciones"
+              (click)="seleccionarYAbrirMenu(producto, menu, $event)"
+            >
+              <i class="pi pi-ellipsis-v"></i>
+            </button>
+          }
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6" class="vacio">No hay productos que coincidan con el filtro.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-menu #menu [popup]="true" [model]="accionesMenu()" appendTo="body" />
+
+  <app-producto-form-dialog [(visible)]="productoDialogVisible" [producto]="productoEnEdicion()" />
+  <app-compra-dialog [(visible)]="compraVisible" [productos]="productos()" [productoFijo]="productoFijo()" />
+  <app-perdida-dialog [(visible)]="perdidaVisible" [productos]="productos()" [productoFijo]="productoFijo()" />
+  <app-ajuste-dialog [(visible)]="ajusteVisible" [productos]="productos()" [productoFijo]="productoFijo()" />
+  <app-stock-minimo-dialog [(visible)]="stockMinVisible" />
+
+  <p-toast />
+</div>
