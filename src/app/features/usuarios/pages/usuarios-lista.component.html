@@ -1,0 +1,132 @@
+<div class="usuarios-page">
+  <header class="page-header">
+    <div>
+      <h1>Usuarios y Roles</h1>
+      <p>Gestión de accesos administrativos del sistema</p>
+    </div>
+    <div class="buscador">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        pInputText
+        placeholder="Buscar usuario…"
+        [value]="query()"
+        (input)="onBuscar($any($event.target).value)"
+      />
+    </div>
+  </header>
+
+  <section class="resumen">
+    <div class="tarjeta">
+      <span class="etiqueta">Usuarios registrados</span>
+      <span class="valor">{{ totalUsuarios() }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Activos</span>
+      <span class="valor valor-activo">{{ activos() }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Inactivos</span>
+      <span class="valor valor-inactivo">{{ inactivos() }}</span>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <p-button label="Nuevo usuario" icon="pi pi-plus" (onClick)="abrirCrear()" />
+  </div>
+
+  <p-table [value]="filas()" [loading]="cargando()" dataKey="id" class="usuarios-table">
+    <ng-template #header>
+      <tr>
+        <th>Nombre</th>
+        <th>Usuario</th>
+        <th>Roles</th>
+        <th>Estado</th>
+        <th>Último acceso</th>
+        <th></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-usuario>
+      <tr>
+        <td>
+          <div class="nombre-celda">
+            <span class="avatar">{{ usuario.nombre.slice(0, 1) }}</span>
+            <span class="nombre-texto">{{ usuario.nombre }}</span>
+          </div>
+        </td>
+        <td>{{ usuario.usuario }}</td>
+        <td>
+          <div class="roles-celda">
+            @for (rol of usuario.roles; track rol) {
+              <p-tag [value]="rol" class="rol-tag" />
+            }
+            @if (usuario.roles.length === 0) {
+              <span class="sin-rol">Sin rol asignado</span>
+            }
+            <button
+              type="button"
+              class="btn-roles"
+              aria-label="Gestionar roles"
+              (click)="abrirRolesPopover($event, usuario, rp)"
+            >
+              <i class="pi pi-plus"></i>
+            </button>
+          </div>
+        </td>
+        <td>
+          <p-tag
+            [value]="usuario.activo ? 'Activo' : 'Inactivo'"
+            [severity]="usuario.activo ? 'success' : 'danger'"
+          />
+        </td>
+        <td class="ultimo-acceso">
+          {{ usuario.fechaUltimoAcceso ? (usuario.fechaUltimoAcceso | date: 'short') : 'Nunca' }}
+        </td>
+        <td class="acciones-celda">
+          <button
+            type="button"
+            class="btn-menu"
+            aria-label="Acciones"
+            (click)="seleccionarYAbrirMenu(usuario, menu, $event)"
+          >
+            <i class="pi pi-ellipsis-v"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6" class="vacio">No hay usuarios que coincidan con la búsqueda.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-menu #menu [popup]="true" [model]="accionesMenu()" appendTo="body" />
+
+  <p-popover #rp>
+    <ng-template #content>
+      @if (usuarioParaRoles(); as usuario) {
+        <div class="roles-popover">
+          <div class="titulo">Gestionar roles</div>
+          @for (rol of roles(); track rol.id) {
+            <label class="rol-check">
+              <input
+                type="checkbox"
+                [checked]="tieneRol(usuario, rol)"
+                (change)="alternarRol(usuario, rol, $any($event.target).checked)"
+              />
+              {{ rol.nombre }}
+            </label>
+          }
+        </div>
+      }
+    </ng-template>
+  </p-popover>
+
+  <app-usuario-form-dialog [(visible)]="dialogVisible" [usuario]="usuarioEnEdicion()" />
+  <app-cambiar-password-dialog [(visible)]="passwordDialogVisible" [usuario]="usuarioParaPassword()" />
+
+  <p-toast />
+</div>

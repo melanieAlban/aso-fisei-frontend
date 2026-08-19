@@ -3,6 +3,8 @@ export interface Usuario {
   nombre: string;
   usuario: string;
   roles: string[];
+  activo?: boolean;
+  fechaUltimoAcceso?: string | null;
 }
 
 export interface LoginResponseData {

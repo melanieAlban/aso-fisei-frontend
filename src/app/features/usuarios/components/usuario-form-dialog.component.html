@@ -1,0 +1,64 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '430px' }"
+  [header]="esEdicion() ? 'Editar usuario' : 'Nuevo usuario'"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="usuario-form">
+    <div class="campo">
+      <label for="nombre">Nombre completo</label>
+      <input
+        id="nombre"
+        type="text"
+        pInputText
+        formControlName="nombre"
+        placeholder="Ej. Ana Paredes"
+        class="w-full"
+      />
+    </div>
+
+    <div class="campo">
+      <label for="usuario">Usuario</label>
+      <input
+        id="usuario"
+        type="text"
+        pInputText
+        formControlName="usuario"
+        placeholder="Ej. ana.paredes"
+        autocomplete="off"
+        class="w-full"
+      />
+    </div>
+
+    @if (!esEdicion()) {
+      <div class="campo">
+        <label for="password">Contraseña</label>
+        <p-password
+          inputId="password"
+          formControlName="password"
+          [feedback]="false"
+          [toggleMask]="true"
+          placeholder="Mínimo 8 caracteres"
+          styleClass="w-full"
+          [inputStyle]="{ width: '100%' }"
+        />
+      </div>
+    }
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button
+        [label]="esEdicion() ? 'Guardar cambios' : 'Crear usuario'"
+        [loading]="cargando()"
+        type="submit"
+      />
+    </div>
+  </form>
+</p-dialog>
