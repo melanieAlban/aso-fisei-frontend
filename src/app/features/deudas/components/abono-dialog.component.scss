@@ -1,0 +1,138 @@
+.resumen-box {
+  display: flex;
+  justify-content: space-between;
+  background: #f7f8fa;
+  border-radius: 12px;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+
+  .etiqueta {
+    display: block;
+    font-size: 11px;
+    color: #9aa2b1;
+    font-weight: 600;
+  }
+
+  .valor {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+    margin-top: 2px;
+  }
+
+  .valor-abonado {
+    color: #0a7d58;
+  }
+
+  .valor-saldo {
+    color: #c0392b;
+  }
+
+  .al-final {
+    text-align: right;
+  }
+}
+
+.mov-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+
+  label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0a1638;
+  }
+}
+
+.campo-monto {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 52px;
+  padding: 0 14px;
+  border: 1.5px solid #e1e4ea;
+  border-radius: 12px;
+  background: #fff;
+
+  span {
+    font-size: 17px;
+    font-weight: 700;
+    color: #9aa2b1;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    font: 800 19px 'Plus Jakarta Sans', sans-serif;
+    color: #0a1638;
+    width: 100%;
+  }
+}
+
+.presets {
+  display: flex;
+  gap: 8px;
+}
+
+.preset {
+  flex: 1;
+  height: 38px;
+  border: 1px solid #e1e4ea;
+  background: #fff;
+  border-radius: 10px;
+  font: 700 12.5px 'Plus Jakarta Sans', sans-serif;
+  color: #5b6478;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #12d897;
+    color: #0a7d58;
+  }
+}
+
+.toggle-row {
+  display: flex;
+  gap: 9px;
+}
+
+.toggle {
+  flex: 1;
+  height: 48px;
+  border: 1.5px solid #e1e4ea;
+  background: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #5b6478;
+  font: 700 13px 'Plus Jakarta Sans', sans-serif;
+
+  &.active {
+    background: #0a1638;
+    color: #fff;
+    border-color: #0a1638;
+  }
+}
+
+.error {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+
+  :host ::ng-deep .p-button {
+    flex: 1;
+  }
+}

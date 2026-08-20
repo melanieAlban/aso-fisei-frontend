@@ -1,0 +1,57 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [header]="tituloAccion()"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  @if (deuda(); as d) {
+    <div class="resumen-box">
+      <div>
+        <span class="etiqueta">Total</span>
+        <span class="valor">{{ d.deuda.montoTotal.toFixed(2) }}</span>
+      </div>
+      <div>
+        <span class="etiqueta">Abonado</span>
+        <span class="valor valor-abonado">{{ d.deuda.montoAbonado.toFixed(2) }}</span>
+      </div>
+      <div class="al-final">
+        <span class="etiqueta">Saldo</span>
+        <span class="valor valor-saldo">{{ saldoPendiente().toFixed(2) }}</span>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="mov-form">
+      <div class="campo">
+        <label for="monto">{{ esCobrar() ? 'Monto del abono' : 'Monto del pago' }}</label>
+        <div class="campo-monto">
+          <span>$</span>
+          <input id="monto" type="text" inputmode="decimal" formControlName="monto" placeholder="0.00" />
+        </div>
+        <div class="presets">
+          <button type="button" class="preset" (click)="aplicarMitad()">50%</button>
+          <button type="button" class="preset" (click)="aplicarTotal()">Saldar total ({{ saldoPendiente().toFixed(2) }})</button>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Método de pago</label>
+        <div class="toggle-row">
+          <button type="button" class="toggle" [class.active]="metodoPago() === 'EFECTIVO'" (click)="elegirEfectivo()">Efectivo</button>
+          <button type="button" class="toggle" [class.active]="metodoPago() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">Transferencia</button>
+        </div>
+      </div>
+
+      @if (errorMensaje()) {
+        <p class="error">{{ errorMensaje() }}</p>
+      }
+
+      <div class="acciones">
+        <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+        <p-button [label]="tituloAccion()" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
+      </div>
+    </form>
+  }
+</p-dialog>

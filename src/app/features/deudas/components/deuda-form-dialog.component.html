@@ -1,0 +1,41 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  header="Nueva deuda"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="mov-form">
+    <div class="campo">
+      <label>Tipo</label>
+      <div class="toggle-row">
+        <button type="button" class="toggle" [class.active]="tipo() === 'POR_COBRAR'" (click)="elegirCobrar()">Por cobrar</button>
+        <button type="button" class="toggle" [class.active]="tipo() === 'POR_PAGAR'" (click)="elegirPagar()">Por pagar</button>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="contraparte">{{ etiquetaContraparte() }}</label>
+      <input id="contraparte" type="text" formControlName="contraparte" placeholder="Ej. Andrea Suárez" class="input-plain" />
+    </div>
+
+    <div class="campo">
+      <label for="montoTotal">Monto total</label>
+      <div class="campo-monto">
+        <span>$</span>
+        <input id="montoTotal" type="text" inputmode="decimal" formControlName="montoTotal" placeholder="0.00" />
+      </div>
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Crear deuda" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
+    </div>
+  </form>
+</p-dialog>

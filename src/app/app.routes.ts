@@ -48,13 +48,12 @@ export const routes: Routes = [
       },
       {
         path: 'gastos',
-        loadComponent: () =>
-          import('./features/gastos/gastos.component').then((m) => m.GastosComponent),
+        loadChildren: () => import('./features/gastos/gastos.routes').then((m) => m.GASTOS_ROUTES),
+        canActivate: [permisoGuard(['Admin'])],
       },
       {
         path: 'deudas',
-        loadComponent: () =>
-          import('./features/deudas/deudas.component').then((m) => m.DeudasComponent),
+        loadChildren: () => import('./features/deudas/deudas.routes').then((m) => m.DEUDAS_ROUTES),
         canActivate: [permisoGuard(['Admin'])],
       },
     ],
