@@ -1,0 +1,170 @@
+<div class="dashboard-page">
+  <header class="page-header">
+    <div>
+      @if (esCompleto()) {
+        <h1>Dashboard</h1>
+      } @else {
+        <h1>Hola, {{ nombreUsuario() }} 👋</h1>
+      }
+      <p class="capitalize">{{ hoyTexto }} · Resumen general</p>
+    </div>
+  </header>
+
+  @if (dashboard(); as d) {
+    <!-- ===== KPI ROW ===== -->
+    <section class="kpi-row" [class.kpi-row-4]="esCompleto()" [class.kpi-row-2]="!esCompleto()">
+      <div class="kpi-card">
+        <div class="icono icono-mint">
+          <i class="pi pi-arrow-up-right"></i>
+        </div>
+        <div class="etiqueta">Ventas del día</div>
+        <div class="valor">{{ d.ventasHoy.total | number: '1.2-2' }}</div>
+        <div class="detalle">{{ d.ventasHoy.cantidadTransacciones }} transacciones hoy</div>
+      </div>
+
+      @if (esCompleto()) {
+        <div class="kpi-card">
+          <div class="icono icono-navy"><i class="pi pi-credit-card"></i></div>
+          <div class="etiqueta">Fondo General</div>
+          <div class="valor">{{ saldoFondoTotal() | number: '1.2-2' }}</div>
+          <div class="detalle">Efectivo {{ d.fondoGeneral!.saldoEfectivo | number: '1.2-2' }} · Transf. {{ d.fondoGeneral!.saldoTransferencia | number: '1.2-2' }}</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="icono icono-navy"><i class="pi pi-wallet"></i></div>
+          <div class="etiqueta">Caja actual</div>
+          @if (caja()?.abierta) {
+            <div class="valor">{{ ventasCajaTotal() | number: '1.2-2' }}</div>
+            <div class="detalle">Vendido desde apertura</div>
+          } @else {
+            <div class="valor valor-muted">Cerrada</div>
+            <div class="detalle">No hay caja abierta</div>
+          }
+        </div>
+
+        <div class="kpi-card">
+          <div class="icono icono-rojo"><i class="pi pi-arrow-down-right"></i></div>
+          <div class="etiqueta">Gastos del mes</div>
+          <div class="valor">{{ d.gastosDelMes!.total | number: '1.2-2' }}</div>
+          <div class="detalle">{{ d.gastosDelMes!.cantidad }} gastos registrados</div>
+        </div>
+      } @else {
+        <div class="kpi-card">
+          <div class="icono icono-navy"><i class="pi pi-receipt"></i></div>
+          <div class="etiqueta">Transacciones</div>
+          <div class="valor">{{ d.ventasHoy.cantidadTransacciones }}</div>
+          <div class="detalle">Ventas realizadas hoy</div>
+        </div>
+      }
+    </section>
+
+    @if (esCompleto()) {
+      <!-- ===== GRID ROW A ===== -->
+      <section class="grid-a">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Ventas de los últimos 7 días</div>
+              <div class="card-sub">Incluye solo ventas activas (no anuladas)</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <p-chart type="bar" [data]="chartData()" [options]="chartOptions" height="220px" />
+          </div>
+        </div>
+
+        <div class="card card-deudas">
+          <div class="card-title">Deudas pendientes</div>
+          <div class="card-sub">Por cobrar y por pagar</div>
+
+          <div class="deuda-linea">
+            <span class="deuda-punto" style="background:#C0392B"></span>
+            <span class="deuda-label">Por cobrar</span>
+            <span class="deuda-valor">{{ d.deudasPendientes!.porCobrar.cantidad }} · {{ d.deudasPendientes!.porCobrar.montoTotal | number: '1.2-2' }}</span>
+          </div>
+          <div class="deuda-linea">
+            <span class="deuda-punto" style="background:#E8A73C"></span>
+            <span class="deuda-label">Por pagar</span>
+            <span class="deuda-valor">{{ d.deudasPendientes!.porPagar.cantidad }} · {{ d.deudasPendientes!.porPagar.montoTotal | number: '1.2-2' }}</span>
+          </div>
+
+          <a routerLink="/deudas" class="ver-todas">Ver todas <i class="pi pi-arrow-right"></i></a>
+        </div>
+      </section>
+
+      <!-- ===== GRID ROW B ===== -->
+      <section class="grid-b">
+        <div class="card">
+          <div class="card-title">Más vendidos</div>
+          <div class="card-sub">Top 5 · últimos 30 días</div>
+          <div class="top-lista">
+            @for (p of d.productosMasVendidos; track p.productoId; let i = $index) {
+              <div class="top-item">
+                <div class="top-item-head">
+                  <span class="top-rank">#{{ i + 1 }}</span>
+                  <span class="top-nombre">{{ p.nombre }}</span>
+                  <span class="top-unidades">{{ p.cantidadVendida }} u</span>
+                </div>
+                <div class="top-barra">
+                  <div class="top-relleno" [style.width.%]="(p.cantidadVendida / maxVendido()) * 100"></div>
+                </div>
+              </div>
+            } @empty {
+              <p class="vacio">Sin ventas en los últimos 30 días.</p>
+            }
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Poco stock</div>
+            <span class="badge-alerta">{{ d.productosPocoStock.cantidad }} alertas</span>
+          </div>
+          <div class="card-sub">Requieren reposición</div>
+          <div class="stock-lista">
+            @for (s of d.productosPocoStock.productos; track s.id) {
+              <div class="stock-item">
+                <div class="stock-qty" [style.background]="colorStock(s.stockActual).bg" [style.color]="colorStock(s.stockActual).color">{{ s.stockActual }}</div>
+                <div class="stock-nombre">{{ s.nombre }}</div>
+              </div>
+            } @empty {
+              <p class="vacio">Sin alertas de stock bajo.</p>
+            }
+          </div>
+          <a routerLink="/inventario" class="ver-todas">Ir a Inventario <i class="pi pi-arrow-right"></i></a>
+        </div>
+
+        <div class="card card-eventos">
+          <div class="card-title">Eventos activos</div>
+          <div class="card-sub card-sub-light">Entradas y aforo</div>
+          <div class="eventos-proximamente">
+            <i class="pi pi-calendar"></i>
+            <span>Próximamente</span>
+            <p>El módulo de Eventos todavía no está disponible.</p>
+          </div>
+        </div>
+      </section>
+    } @else {
+      <!-- ===== VENDEDOR: poco stock ===== -->
+      <section class="card">
+        <div class="card-head">
+          <div class="card-title">Poco stock</div>
+          <span class="badge-alerta">{{ d.productosPocoStock.cantidad }} alertas</span>
+        </div>
+        <div class="card-sub">Productos que requieren reposición</div>
+        <div class="stock-lista stock-lista-grid">
+          @for (s of d.productosPocoStock.productos; track s.id) {
+            <div class="stock-item">
+              <div class="stock-qty" [style.background]="colorStock(s.stockActual).bg" [style.color]="colorStock(s.stockActual).color">{{ s.stockActual }}</div>
+              <div class="stock-nombre">{{ s.nombre }}</div>
+            </div>
+          } @empty {
+            <p class="vacio">Sin alertas de stock bajo.</p>
+          }
+        </div>
+      </section>
+    }
+  } @else if (cargando()) {
+    <p class="vacio">Cargando dashboard…</p>
+  }
+</div>
