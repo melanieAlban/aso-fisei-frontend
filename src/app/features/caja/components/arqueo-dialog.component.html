@@ -1,0 +1,100 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '560px' }"
+  header="Arqueo y corte de caja"
+  [draggable]="false"
+  [dismissableMask]="!resultado()"
+  [closable]="!!resultado() || !cargando()"
+>
+  @if (!resultado()) {
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+      <div class="grid2">
+        <div class="campo">
+          <label for="efectivoContado">Efectivo contado</label>
+          <div class="campo-monto">
+            <span>$</span>
+            <input id="efectivoContado" type="text" inputmode="decimal" formControlName="efectivoContado" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="campo">
+          <label for="transferenciaContado">Transferencias confirmadas</label>
+          <div class="campo-monto">
+            <span>$</span>
+            <input id="transferenciaContado" type="text" inputmode="decimal" formControlName="transferenciaContado" placeholder="0.00" />
+          </div>
+        </div>
+      </div>
+
+      <div class="titulo-seccion">Cierre de caja</div>
+      <p class="ayuda">Define cuánto se retira al fondo general (efectivo y transferencia).</p>
+
+      <div class="grid2">
+        <div class="campo">
+          <label for="montoRetiradoEfectivo">Retirar efectivo</label>
+          <div class="campo-monto">
+            <span>$</span>
+            <input id="montoRetiradoEfectivo" type="text" inputmode="decimal" formControlName="montoRetiradoEfectivo" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="campo">
+          <label for="montoRetiradoTransferencia">Retirar transferencia</label>
+          <div class="campo-monto">
+            <span>$</span>
+            <input id="montoRetiradoTransferencia" type="text" inputmode="decimal" formControlName="montoRetiradoTransferencia" placeholder="0.00" />
+          </div>
+        </div>
+      </div>
+
+      <div class="fondo-cambio">
+        <span>Fondo de cambio (efectivo contado − retiro efectivo)</span>
+        <span>{{ fondoCambio() | number: '1.2-2' }}</span>
+      </div>
+
+      @if (retiroExcedeEfectivo()) {
+        <p class="error">El retiro de efectivo no puede superar el efectivo contado.</p>
+      }
+      @if (errorMensaje()) {
+        <p class="error">{{ errorMensaje() }}</p>
+      }
+
+      <div class="acciones">
+        <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+        <p-button label="Cerrar arqueo" [loading]="cargando()" [disabled]="bloqueado()" type="submit" />
+      </div>
+    </form>
+  } @else {
+    <div class="resultado">
+      <div class="resultado-grid">
+        <div class="resultado-card">
+          <div class="resultado-titulo">Efectivo</div>
+          <div class="resultado-linea"><span>Esperado</span><span>{{ resultado()!.efectivoEsperado | number: '1.2-2' }}</span></div>
+          <div class="resultado-linea"><span>Contado</span><span>{{ resultado()!.efectivoContado | number: '1.2-2' }}</span></div>
+          <div class="resultado-linea resultado-diff" [class.negativo]="diferenciaEfectivo() > 0.005" [class.positivo]="diferenciaEfectivo() < -0.005">
+            <span>Diferencia</span><span>{{ diferenciaEfectivo() | number: '1.2-2' }}</span>
+          </div>
+        </div>
+        <div class="resultado-card">
+          <div class="resultado-titulo">Transferencia</div>
+          <div class="resultado-linea"><span>Esperado</span><span>{{ resultado()!.transferenciaEsperado | number: '1.2-2' }}</span></div>
+          <div class="resultado-linea"><span>Contado</span><span>{{ resultado()!.transferenciaContado | number: '1.2-2' }}</span></div>
+          <div class="resultado-linea resultado-diff" [class.negativo]="diferenciaTransferencia() > 0.005" [class.positivo]="diferenciaTransferencia() < -0.005">
+            <span>Diferencia</span><span>{{ diferenciaTransferencia() | number: '1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="titulo-seccion">Clasificar diferencia</div>
+      <div class="clasificar-row">
+        <button type="button" class="toggle" [class.active]="resultado()!.clasificacionDiferencia === 'GANANCIA'" [disabled]="clasificando()" (click)="clasificar('GANANCIA')">Ganancia</button>
+        <button type="button" class="toggle" [class.active]="resultado()!.clasificacionDiferencia === 'PERDIDA'" [disabled]="clasificando()" (click)="clasificar('PERDIDA')">Pérdida</button>
+        <button type="button" class="toggle" [class.active]="resultado()!.clasificacionDiferencia === 'PENDIENTE'" [disabled]="clasificando()" (click)="clasificar('PENDIENTE')">Pendiente</button>
+      </div>
+
+      <div class="acciones">
+        <p-button label="Cerrar" (onClick)="cerrar()" styleClass="w-full" />
+      </div>
+    </div>
+  }
+</p-dialog>

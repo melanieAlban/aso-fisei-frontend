@@ -1,0 +1,87 @@
+<div class="deudas-page">
+  <header class="page-header">
+    <div>
+      <h1>Deudas</h1>
+      <p>Cuentas por cobrar y por pagar</p>
+    </div>
+    <div class="buscador">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        pInputText
+        placeholder="Buscar contraparte…"
+        [value]="query()"
+        (input)="onBuscar($any($event.target).value)"
+      />
+    </div>
+  </header>
+
+  <div class="tabs-row">
+    <div class="tabs">
+      <button type="button" class="tab" [class.active]="tab() === 'POR_COBRAR'" (click)="cambiarTab('POR_COBRAR')">Por cobrar</button>
+      <button type="button" class="tab" [class.active]="tab() === 'POR_PAGAR'" (click)="cambiarTab('POR_PAGAR')">Por pagar</button>
+    </div>
+    <p-button label="Nueva deuda" icon="pi pi-plus" (onClick)="abrirCrear()" class="btn-nueva" />
+  </div>
+
+  <section class="resumen">
+    <div class="tarjeta">
+      <span class="etiqueta">{{ esCobrar() ? 'Total por cobrar' : 'Total por pagar' }}</span>
+      <span class="valor">{{ totalGeneral() | number: '1.2-2' }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Abonado</span>
+      <span class="valor valor-abonado">{{ totalAbonado() | number: '1.2-2' }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">{{ esCobrar() ? 'Pendiente de cobro' : 'Pendiente de pago' }}</span>
+      <span class="valor valor-alerta">{{ totalPendiente() | number: '1.2-2' }}</span>
+    </div>
+  </section>
+
+  <p-table [value]="filas()" [loading]="cargando()" dataKey="deuda.id" class="deudas-table">
+    <ng-template #header>
+      <tr>
+        <th>{{ colContraparte() }}</th>
+        <th>Monto total</th>
+        <th>Abonado</th>
+        <th>Progreso</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-fila>
+      <tr [class.cancelada]="fila.deuda.estado === 'CANCELADA'">
+        <td class="celda-nombre">{{ fila.deuda.contraparte }}</td>
+        <td class="celda-monto">{{ fila.deuda.montoTotal | number: '1.2-2' }}</td>
+        <td class="celda-abonado">{{ fila.deuda.montoAbonado | number: '1.2-2' }}</td>
+        <td class="celda-progreso">
+          <div class="barra">
+            <div class="relleno" [style.width.%]="progreso(fila)" [style.background]="fila.deuda.estado === 'CANCELADA' ? '#12D897' : (fila.deuda.montoAbonado > 0 ? '#E8A73C' : '#D4D8E0')"></div>
+          </div>
+          <span class="falta">Falta {{ saldoPendiente(fila) | number: '1.2-2' }}</span>
+        </td>
+        <td>
+          <p-tag [value]="estado(fila).label" [style]="{ background: estado(fila).bg, color: estado(fila).color }" />
+        </td>
+        <td class="acciones-celda">
+          @if (fila.deuda.estado !== 'CANCELADA') {
+            <button type="button" class="btn-abonar" (click)="abrirAbono(fila)">{{ accionLabel() }}</button>
+          }
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6" class="vacio">No hay deudas registradas en esta categoría.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-deuda-form-dialog [(visible)]="deudaDialogVisible" [tipoInicial]="tab()" />
+  <app-abono-dialog [(visible)]="abonoVisible" [deuda]="deudaSeleccionada()" />
+
+  <p-toast />
+</div>

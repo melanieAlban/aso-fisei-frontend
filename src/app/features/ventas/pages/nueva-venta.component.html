@@ -1,0 +1,171 @@
+<div class="venta-page">
+  @if (verificandoCaja()) {
+    <div class="cargando">Cargando…</div>
+  } @else if (!cajaActual()) {
+    <div class="sin-caja">
+      <div class="icono"><i class="pi pi-wallet"></i></div>
+      <h2>No hay caja abierta</h2>
+      <p>
+        @if (esAdmin()) {
+          Debes abrir una caja antes de poder registrar ventas.
+        } @else {
+          Espera a que un administrador abra la caja para poder vender.
+        }
+      </p>
+      @if (esAdmin()) {
+        <a routerLink="/caja" class="btn-ir-caja">Ir a Caja / Fondo</a>
+      }
+    </div>
+  } @else {
+    <div class="pos-layout">
+      <!-- ===== CATÁLOGO ===== -->
+      <div class="catalogo">
+        <div class="buscador">
+          <i class="pi pi-search"></i>
+          <input
+            type="text"
+            placeholder="Buscar producto…"
+            [value]="query()"
+            (input)="query.set($any($event.target).value)"
+          />
+        </div>
+
+        <div class="grid-productos">
+          @for (p of productosFiltrados(); track p.id) {
+            <button
+              type="button"
+              class="tarjeta-producto"
+              [class.agotado]="p.stockActual <= 0"
+              [disabled]="p.stockActual <= 0"
+              (click)="agregarProducto(p)"
+            >
+              <div class="fila-top">
+                <span class="dot" [class.rojo]="p.stockActual <= 0" [class.ambar]="p.stockActual > 0 && p.stockActual <= 5"></span>
+                @if (cantidadEnCarrito(p.id) > 0) {
+                  <span class="badge-cantidad">{{ cantidadEnCarrito(p.id) }}</span>
+                }
+              </div>
+              <div class="info">
+                <div class="nombre">{{ p.nombre }}</div>
+                <div class="stock">
+                  @if (p.stockActual <= 0) {
+                    Agotado
+                  } @else if (p.stockActual <= 5) {
+                    Solo {{ p.stockActual }} disp.
+                  } @else {
+                    {{ p.stockActual }} disponibles
+                  }
+                </div>
+              </div>
+              <div class="fila-bottom">
+                <span class="precio">{{ p.precioVenta | number: '1.2-2' }}</span>
+                <span class="btn-add"><i class="pi pi-plus"></i></span>
+              </div>
+            </button>
+          }
+        </div>
+
+        @if (productosFiltrados().length === 0) {
+          <div class="vacio">No se encontraron productos para «{{ query() }}».</div>
+        }
+      </div>
+
+      <!-- ===== CARRITO ===== -->
+      <div class="carrito-panel">
+        <div class="carrito-header">
+          <i class="pi pi-shopping-cart"></i>
+          <span class="titulo">Carrito</span>
+          <span class="contador">{{ cantidadItems() }} art.</span>
+        </div>
+
+        <div class="carrito-items">
+          @if (lineasCarrito().length > 0) {
+            @for (l of lineasCarrito(); track l.producto.id) {
+              <div class="linea">
+                <div class="linea-top">
+                  <div class="linea-info">
+                    <div class="linea-nombre">{{ l.producto.nombre }}</div>
+                    <div class="linea-unit">{{ l.producto.precioVenta | number: '1.2-2' }} c/u</div>
+                  </div>
+                  <div class="linea-total">{{ l.lineTotal | number: '1.2-2' }}</div>
+                  <button type="button" class="btn-quitar" aria-label="Quitar del carrito" (click)="quitarDelCarrito(l.producto.id)">
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </div>
+
+                <div class="stepper">
+                  <button type="button" (click)="decrementar(l.producto.id)" aria-label="Quitar uno"><i class="pi pi-minus"></i></button>
+                  <div class="qty">{{ l.cantidad }}</div>
+                  <button type="button" (click)="incrementar(l.producto.id, l.producto.stockActual)" [disabled]="l.cantidad >= l.producto.stockActual" aria-label="Agregar uno"><i class="pi pi-plus"></i></button>
+                </div>
+
+                <label class="alquiler-toggle">
+                  <input type="checkbox" [checked]="l.esAlquiler" (change)="toggleAlquiler(l.producto.id)" />
+                  <span>Es alquiler</span>
+                </label>
+              </div>
+            }
+          } @else {
+            <div class="carrito-vacio">
+              <div class="icono"><i class="pi pi-shopping-cart"></i></div>
+              <div class="titulo">Carrito vacío</div>
+              <div class="subtitulo">Toca un producto para agregarlo</div>
+            </div>
+          }
+        </div>
+
+        <div class="carrito-footer">
+          <div class="metodo-label">Método de pago</div>
+          <div class="metodo-toggle">
+            <button type="button" [class.active]="metodoPago() === 'EFECTIVO'" (click)="elegirEfectivo()">
+              <i class="pi pi-wallet"></i> Efectivo
+            </button>
+            <button type="button" [class.active]="metodoPago() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">
+              <i class="pi pi-sync"></i> Transferencia
+            </button>
+          </div>
+
+          @if (metodoPago() === 'EFECTIVO') {
+            <div class="pago-grid">
+              <div>
+                <div class="mini-label">Monto recibido</div>
+                <div class="campo-monto">
+                  <span>$</span>
+                  <input type="text" inputmode="decimal" [value]="montoRecibido()" (input)="montoRecibido.set($any($event.target).value)" placeholder="0.00" />
+                </div>
+              </div>
+              <div>
+                <div class="mini-label">Cambio</div>
+                <div class="cambio-box" [class.negativo]="cambio() < 0">{{ (cambio() > 0 ? cambio() : 0) | number: '1.2-2' }}</div>
+              </div>
+            </div>
+          }
+
+          <div class="total-row">
+            <span>Total</span>
+            <span class="total-valor">{{ totalCarrito() | number: '1.2-2' }}</span>
+          </div>
+
+          <p-button label="Registrar venta" icon="pi pi-check" [loading]="registrando()" [disabled]="registrarBloqueado()" styleClass="w-full" (onClick)="registrar()" />
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (ventaExitosa(); as venta) {
+    <div class="success-overlay">
+      <div class="success-card">
+        <div class="success-icono"><i class="pi pi-check"></i></div>
+        <div class="success-titulo">¡Venta registrada!</div>
+        <div class="success-msg">La transacción se guardó correctamente.</div>
+        <div class="success-detalle">
+          <div><span>Total cobrado</span><span>{{ venta.total | number: '1.2-2' }}</span></div>
+          <div><span>Método</span><span>{{ venta.metodoPago === 'EFECTIVO' ? 'Efectivo' : 'Transferencia' }}</span></div>
+        </div>
+        <p-button label="Registrar otra venta" styleClass="w-full" (onClick)="registrarOtra()" />
+      </div>
+    </div>
+  }
+
+  <p-toast />
+</div>

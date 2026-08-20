@@ -1,0 +1,71 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '430px' }"
+  header="Registrar gasto"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="mov-form">
+    <div class="campo">
+      <label for="descripcion">Descripción</label>
+      <input id="descripcion" type="text" formControlName="descripcion" placeholder="Ej. Alquiler de local para evento" class="input-plain" />
+    </div>
+
+    <div class="campo">
+      <label for="monto">Monto</label>
+      <div class="campo-monto">
+        <span>$</span>
+        <input id="monto" type="text" inputmode="decimal" formControlName="monto" placeholder="0.00" />
+      </div>
+    </div>
+
+    <div class="campo campo-categoria">
+      <label for="categoria">Categoría</label>
+      <input
+        id="categoria"
+        type="text"
+        formControlName="categoria"
+        placeholder="Ej. Logística"
+        class="input-plain"
+        (focus)="sugerenciasVisibles.set(true)"
+        (blur)="sugerenciasVisibles.set(false)"
+      />
+      @if (sugerenciasVisibles() && sugerencias().length > 0) {
+        <div class="sugerencias">
+          @for (s of sugerencias(); track s) {
+            <button type="button" class="sugerencia" (mousedown)="seleccionarCategoria(s)">{{ s }}</button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      <label>Fuente de pago</label>
+      <div class="toggle-row">
+        <button type="button" class="toggle" [class.active]="fuentePago() === 'EFECTIVO_CAJA'" (click)="elegirCaja()">Efectivo de caja</button>
+        <button type="button" class="toggle" [class.active]="fuentePago() === 'FONDO_GENERAL'" (click)="elegirFondo()">Fondo General</button>
+      </div>
+    </div>
+
+    @if (requiereMoneda()) {
+      <div class="campo">
+        <label>Moneda <span class="obligatorio">(obligatorio)</span></label>
+        <div class="toggle-row">
+          <button type="button" class="toggle" [class.active]="moneda() === 'EFECTIVO'" (click)="elegirEfectivo()">Efectivo</button>
+          <button type="button" class="toggle" [class.active]="moneda() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">Transferencia</button>
+        </div>
+      </div>
+    }
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Registrar gasto" [loading]="cargando()" [disabled]="bloqueado()" type="submit" />
+    </div>
+  </form>
+</p-dialog>

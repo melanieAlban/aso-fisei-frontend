@@ -1,0 +1,79 @@
+<div class="historial-page">
+  <header class="page-header">
+    <h1>Historial de ventas</h1>
+    <p>Ventas registradas y anulación de ítems</p>
+  </header>
+
+  <div class="filtros">
+    <div class="campo">
+      <label>Método de pago</label>
+      <select [value]="fMetodo()" (change)="onFMetodo($any($event.target).value)">
+        <option value="">Todos</option>
+        <option value="EFECTIVO">Efectivo</option>
+        <option value="TRANSFERENCIA">Transferencia</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label>Desde</label>
+      <input type="date" [value]="fDesde()" (change)="onFDesde($any($event.target).value)" />
+    </div>
+    <div class="campo">
+      <label>Hasta</label>
+      <input type="date" [value]="fHasta()" (change)="onFHasta($any($event.target).value)" />
+    </div>
+  </div>
+
+  <p-table [value]="filas()" [loading]="cargando()" class="historial-table">
+    <ng-template #header>
+      <tr>
+        <th>Producto</th>
+        <th>Cant.</th>
+        <th>P. unit</th>
+        <th>Total</th>
+        <th>Método</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-fila>
+      <tr [style.opacity]="fila.anulado ? 0.6 : 1">
+        <td>
+          <div class="celda-producto" [style.text-decoration]="fila.anulado ? 'line-through' : 'none'">{{ fila.producto }}</div>
+          <div class="celda-fecha">{{ fila.fecha | date: 'short' }}</div>
+        </td>
+        <td>{{ fila.cantidad }}</td>
+        <td class="celda-muted">{{ fila.precioUnit | number: '1.2-2' }}</td>
+        <td class="celda-total" [style.text-decoration]="fila.anulado ? 'line-through' : 'none'">{{ fila.total | number: '1.2-2' }}</td>
+        <td>
+          <p-tag [value]="fila.metodo === 'EFECTIVO' ? 'Efectivo' : 'Transferencia'" [severity]="fila.metodo === 'EFECTIVO' ? 'success' : 'info'" />
+        </td>
+        <td>
+          <p-tag [value]="fila.estado" [severity]="fila.anulado ? 'danger' : 'success'" />
+        </td>
+        <td class="celda-acciones">
+          @if (fila.puedeAnular) {
+            <button type="button" class="btn-anular" aria-label="Anular ítem" (click)="abrirAnular(fila)">
+              <i class="pi pi-times"></i>
+            </button>
+          }
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="vacio">No hay ventas que coincidan con los filtros.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-anular-item-dialog
+    [(visible)]="anularVisible"
+    [ventaId]="anularVentaId()"
+    [itemId]="anularItemId()"
+    [nombreProducto]="anularNombreProducto()"
+  />
+
+  <p-toast />
+</div>

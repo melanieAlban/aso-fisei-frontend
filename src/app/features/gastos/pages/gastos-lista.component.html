@@ -1,0 +1,89 @@
+<div class="gastos-page">
+  <header class="page-header">
+    <div>
+      <h1>Gastos</h1>
+      <p>Registro de egresos de caja y Fondo General</p>
+    </div>
+    <div class="buscador">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        pInputText
+        placeholder="Buscar gasto…"
+        [value]="query()"
+        (input)="onBuscar($any($event.target).value)"
+      />
+    </div>
+  </header>
+
+  <section class="resumen">
+    <div class="tarjeta">
+      <span class="etiqueta">Total gastado (activos)</span>
+      <span class="valor">{{ totalActivos() | number: '1.2-2' }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Gastos activos</span>
+      <span class="valor">{{ cantidadActivos() }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Gastos anulados</span>
+      <span class="valor valor-alerta">{{ cantidadAnulados() }}</span>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="acciones-toolbar">
+      <p-button label="Nuevo gasto" icon="pi pi-plus" (onClick)="abrirCrear()" />
+    </div>
+  </div>
+
+  <p-table [value]="filas()" [loading]="cargando()" dataKey="id" class="gastos-table">
+    <ng-template #header>
+      <tr>
+        <th>Descripción</th>
+        <th>Monto</th>
+        <th>Categoría</th>
+        <th>Fuente de pago</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+        <th></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-gasto>
+      <tr [class.anulado]="gasto.estado === 'ANULADO'">
+        <td class="celda-desc">{{ gasto.descripcion }}</td>
+        <td class="celda-monto">{{ gasto.monto | number: '1.2-2' }}</td>
+        <td>{{ gasto.categoria }}</td>
+        <td class="celda-fuente">{{ fuenteLabel(gasto) }}</td>
+        <td>
+          @if (gasto.estado === 'ACTIVO') {
+            <p-tag value="Activo" [style]="{ background: 'rgba(18,216,151,.14)', color: '#0A7D58' }" />
+          } @else {
+            <p-tag value="Anulado" [style]="{ background: 'rgba(224,79,79,.1)', color: '#C0392B' }" />
+          }
+          @if (gasto.motivoAnulacion) {
+            <div class="motivo-anulacion">Anulado: {{ gasto.motivoAnulacion }}</div>
+          }
+        </td>
+        <td class="celda-fecha">{{ gasto.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td class="acciones-celda">
+          @if (gasto.estado === 'ACTIVO') {
+            <button type="button" class="btn-anular" (click)="abrirAnular(gasto)">Anular</button>
+          }
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="vacio">No hay gastos que coincidan con el filtro.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-gasto-form-dialog [(visible)]="gastoDialogVisible" [categoriasDisponibles]="categorias()" />
+  <app-anular-gasto-dialog [(visible)]="anularVisible" [gastoId]="anularGastoId()" [descripcionGasto]="anularDescripcion()" />
+
+  <p-toast />
+</div>

@@ -39,24 +39,21 @@ export const routes: Routes = [
       },
       {
         path: 'ventas',
-        loadComponent: () =>
-          import('./features/ventas/ventas.component').then((m) => m.VentasComponent),
+        loadChildren: () => import('./features/ventas/ventas.routes').then((m) => m.VENTAS_ROUTES),
       },
       {
         path: 'caja',
-        loadComponent: () =>
-          import('./features/caja/caja.component').then((m) => m.CajaComponent),
+        loadChildren: () => import('./features/caja/caja.routes').then((m) => m.CAJA_ROUTES),
         canActivate: [permisoGuard(['Admin'])],
       },
       {
         path: 'gastos',
-        loadComponent: () =>
-          import('./features/gastos/gastos.component').then((m) => m.GastosComponent),
+        loadChildren: () => import('./features/gastos/gastos.routes').then((m) => m.GASTOS_ROUTES),
+        canActivate: [permisoGuard(['Admin'])],
       },
       {
         path: 'deudas',
-        loadComponent: () =>
-          import('./features/deudas/deudas.component').then((m) => m.DeudasComponent),
+        loadChildren: () => import('./features/deudas/deudas.routes').then((m) => m.DEUDAS_ROUTES),
         canActivate: [permisoGuard(['Admin'])],
       },
     ],

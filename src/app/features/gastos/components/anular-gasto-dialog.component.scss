@@ -1,0 +1,40 @@
+.subtitulo {
+  margin: -8px 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0a1638;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0a1638;
+  display: block;
+  margin-bottom: 7px;
+
+  .obligatorio {
+    color: #c0392b;
+  }
+}
+
+.error {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+
+  :host ::ng-deep .p-button {
+    flex: 1;
+  }
+}

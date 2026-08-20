@@ -1,0 +1,137 @@
+.mov-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+  position: relative;
+
+  label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0a1638;
+  }
+
+  .obligatorio {
+    color: #c0392b;
+  }
+}
+
+.input-plain {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  font: 600 14px 'Plus Jakarta Sans', sans-serif;
+  color: #0a1638;
+  background: #fff;
+  border: 1.5px solid #e1e4ea;
+  border-radius: 11px;
+  outline: none;
+
+  &:focus {
+    border-color: #12d897;
+  }
+}
+
+.campo-categoria {
+  .sugerencias {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    background: #fff;
+    border: 1px solid #e1e4ea;
+    border-radius: 11px;
+    box-shadow: 0 10px 24px rgba(10, 22, 56, 0.14);
+    margin-top: 4px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sugerencia {
+    text-align: left;
+    border: none;
+    background: none;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font: 600 13px 'Plus Jakarta Sans', sans-serif;
+    color: #0a1638;
+    cursor: pointer;
+
+    &:hover {
+      background: #f4f5f7;
+    }
+  }
+}
+
+.campo-monto {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid #e1e4ea;
+  border-radius: 11px;
+  background: #fff;
+
+  span {
+    font-size: 15px;
+    font-weight: 700;
+    color: #9aa2b1;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    font: 700 15px 'Plus Jakarta Sans', sans-serif;
+    color: #0a1638;
+    width: 100%;
+  }
+}
+
+.toggle-row {
+  display: flex;
+  gap: 9px;
+}
+
+.toggle {
+  flex: 1;
+  height: 48px;
+  border: 1.5px solid #e1e4ea;
+  background: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #5b6478;
+  font: 700 12.5px 'Plus Jakarta Sans', sans-serif;
+
+  &.active {
+    background: #0a1638;
+    color: #fff;
+    border-color: #0a1638;
+  }
+}
+
+.error {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+
+  :host ::ng-deep .p-button {
+    flex: 1;
+  }
+}

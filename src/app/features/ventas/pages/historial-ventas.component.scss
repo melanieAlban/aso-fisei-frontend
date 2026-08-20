@@ -1,0 +1,128 @@
+:host {
+  display: block;
+  padding: 20px 24px 48px;
+  color: #0a1638;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.page-header {
+  margin-bottom: 18px;
+
+  h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: #5b6478;
+  }
+}
+
+.filtros {
+  background: #fff;
+  border: 1px solid #eaecef;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9aa2b1;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  select,
+  input {
+    height: 40px;
+    padding: 0 12px;
+    font: 600 13px 'Plus Jakarta Sans', sans-serif;
+    color: #0a1638;
+    background: #f7f8fa;
+    border: 1px solid #e1e4ea;
+    border-radius: 9px;
+    outline: none;
+  }
+}
+
+.celda-producto {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.celda-fecha {
+  font-size: 11px;
+  color: #9aa2b1;
+  margin-top: 2px;
+}
+
+.celda-muted {
+  font-size: 12.5px;
+  color: #5b6478;
+}
+
+.celda-total {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.celda-acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-anular {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid #f0d4d4;
+  background: #fef5f5;
+  color: #c0392b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vacio {
+  text-align: center;
+  padding: 44px 20px;
+  color: #9aa2b1;
+  font-size: 14px;
+}
+
+:host ::ng-deep {
+  .historial-table .p-datatable-thead > tr > th {
+    background: #fafbfc;
+    color: #9aa2b1;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .p-tag {
+    border-radius: 999px;
+  }
+}
+
+@media (max-width: 780px) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+}

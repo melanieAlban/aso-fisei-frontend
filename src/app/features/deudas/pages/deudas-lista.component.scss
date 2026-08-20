@@ -1,0 +1,224 @@
+:host {
+  display: block;
+  padding: 24px;
+  color: #0a1638;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: #5b6478;
+  }
+}
+
+.buscador {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #e1e4ea;
+  border-radius: 11px;
+  padding: 10px 14px;
+  width: 240px;
+
+  i {
+    color: #9aa2b1;
+    font-size: 14px;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    font: 500 13.5px 'Plus Jakarta Sans', sans-serif;
+    color: #0a1638;
+    background: none;
+    width: 100%;
+  }
+}
+
+.tabs-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+  background: #eaecef;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 2px;
+  width: fit-content;
+}
+
+.tab {
+  border: none;
+  background: none;
+  border-radius: 9px;
+  padding: 10px 20px;
+  font: 700 13.5px 'Plus Jakarta Sans', sans-serif;
+  color: #5b6478;
+  cursor: pointer;
+
+  &.active {
+    background: #fff;
+    color: #0a1638;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
+  }
+}
+
+.btn-nueva {
+  margin-left: auto;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .tarjeta {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 15px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .etiqueta {
+    font-size: 12.5px;
+    color: #5b6478;
+    font-weight: 600;
+  }
+
+  .valor {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .valor-abonado {
+    color: #0a7d58;
+  }
+
+  .valor-alerta {
+    color: #c0392b;
+  }
+}
+
+.celda-nombre {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.celda-monto {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.celda-abonado {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0a7d58;
+}
+
+.celda-progreso {
+  min-width: 130px;
+
+  .barra {
+    height: 7px;
+    background: #f0f2f5;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+
+  .relleno {
+    height: 100%;
+    border-radius: 999px;
+  }
+
+  .falta {
+    font-size: 11px;
+    color: #9aa2b1;
+    font-weight: 600;
+  }
+}
+
+.btn-abonar {
+  height: 36px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(18, 216, 151, 0.14);
+  color: #0a7d58;
+  font: 700 12.5px 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(18, 216, 151, 0.24);
+  }
+}
+
+.acciones-celda {
+  display: flex;
+  justify-content: flex-end;
+}
+
+tr.cancelada {
+  opacity: 0.62;
+}
+
+.vacio {
+  text-align: center;
+  padding: 44px 20px;
+  color: #9aa2b1;
+  font-size: 14px;
+}
+
+:host ::ng-deep {
+  .deudas-table .p-datatable-thead > tr > th {
+    background: #fff;
+    color: #9aa2b1;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .p-tag {
+    border-radius: 999px;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 640px) {
+  .buscador {
+    display: none;
+  }
+
+  .resumen {
+    grid-template-columns: 1fr;
+  }
+}

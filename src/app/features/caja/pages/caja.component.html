@@ -1,0 +1,79 @@
+<div class="caja-page">
+  <header class="page-header">
+    <div>
+      <h1>Caja / Fondo general</h1>
+      <p>{{ cajaActual() ? 'Caja abierta' : 'Sin turno activo' }}</p>
+    </div>
+    <div class="fondo-chip">
+      <span class="etiqueta">Fondo general</span>
+      <span class="monto">{{ saldoFondo()?.saldoEfectivo ?? 0 | number: '1.2-2' }}</span>
+      <span class="sep">/</span>
+      <span class="monto">{{ saldoFondo()?.saldoTransferencia ?? 0 | number: '1.2-2' }}</span>
+    </div>
+    @if (esAdmin()) {
+      <button type="button" class="btn-gear" aria-label="Ajustar saldo del fondo general" (click)="abrirAjuste()">
+        <i class="pi pi-cog"></i>
+      </button>
+    }
+  </header>
+
+  <main class="main">
+    @if (verificando()) {
+      <div class="cargando">Cargando…</div>
+    } @else if (!cajaActual()) {
+      <div class="sin-caja">
+        <div class="icono"><i class="pi pi-wallet"></i></div>
+        <h2>No hay caja abierta</h2>
+        <p>
+          @if (esAdmin()) {
+            Registra el fondo inicial en efectivo para comenzar el turno.
+          } @else {
+            Espera a que un administrador abra la caja para poder vender.
+          }
+        </p>
+        @if (esAdmin()) {
+          <p-button label="Abrir caja" icon="pi pi-arrow-right" (onClick)="abrirApertura()" />
+        }
+      </div>
+    } @else {
+      <div class="caja-abierta">
+        <div class="resumen">
+          <div class="tarjeta">
+            <span class="etiqueta">Fondo inicial</span>
+            <span class="valor">{{ cajaActual()!.fondoInicialEfectivo | number: '1.2-2' }}</span>
+          </div>
+          <div class="tarjeta">
+            <span class="etiqueta">Ventas efectivo (hoy)</span>
+            <span class="valor valor-verde">{{ totalVentasEfectivoHoy() | number: '1.2-2' }}</span>
+          </div>
+          <div class="tarjeta">
+            <span class="etiqueta">Ventas transferencia (hoy)</span>
+            <span class="valor">{{ totalVentasTransferenciaHoy() | number: '1.2-2' }}</span>
+          </div>
+          <div class="tarjeta">
+            <span class="etiqueta">N.º de ventas (hoy)</span>
+            <span class="valor">{{ totalCantidadVentasHoy() }}</span>
+          </div>
+        </div>
+
+        @if (esAdmin()) {
+          <div class="arqueo-cta">
+            <div>
+              <div class="arqueo-titulo">Arqueo y corte de caja</div>
+              <p>Cuenta el efectivo y confirma las transferencias para cerrar el turno.</p>
+            </div>
+            <p-button label="Realizar arqueo" icon="pi pi-check-square" (onClick)="abrirArqueo()" />
+          </div>
+        } @else {
+          <div class="solo-lectura">Solo un administrador puede realizar el arqueo de caja.</div>
+        }
+      </div>
+    }
+  </main>
+
+  <app-apertura-caja-dialog [(visible)]="aperturaVisible" />
+  <app-arqueo-dialog [(visible)]="arqueoVisible" [caja]="cajaActual()" />
+  <app-ajuste-saldo-inicial-dialog [(visible)]="ajusteVisible" />
+
+  <p-toast />
+</div>
