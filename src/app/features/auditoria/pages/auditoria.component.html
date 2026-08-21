@@ -1,0 +1,120 @@
+<div class="auditoria-page">
+  <header class="page-header">
+    <div>
+      <h1>Auditoría</h1>
+      <p>Historial de actividad del sistema</p>
+    </div>
+  </header>
+
+  <div class="filtros">
+    <div class="filtros-grid">
+      <div class="campo">
+        <label>Usuario</label>
+        <select [value]="fUsuarioId()" (change)="onFUsuarioId($any($event.target).value)">
+          <option value="">Todos</option>
+          @for (u of usuarios(); track u.id) {
+            <option [value]="u.id">{{ u.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="campo">
+        <label>Módulo</label>
+        <input type="text" [value]="fModulo()" (input)="onFModulo($any($event.target).value)" placeholder="Ej. gastos, users…" />
+      </div>
+      <div class="campo">
+        <label>Acción</label>
+        <input type="text" [value]="fAccion()" (input)="onFAccion($any($event.target).value)" placeholder="Ej. POST, /void…" />
+      </div>
+      <div class="campo">
+        <label>Desde</label>
+        <input type="date" [value]="fDesde()" (change)="onFDesde($any($event.target).value)" />
+      </div>
+      <div class="campo">
+        <label>Hasta</label>
+        <input type="date" [value]="fHasta()" (change)="onFHasta($any($event.target).value)" />
+      </div>
+    </div>
+    @if (hasActiveFilters()) {
+      <div class="filtros-footer">
+        <span class="conteo">{{ total() }} resultados</span>
+        <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">
+          <i class="pi pi-times"></i> Limpiar filtros
+        </button>
+      </div>
+    }
+  </div>
+
+  <p-table [value]="registros()" [loading]="cargando()" dataKey="id" class="auditoria-table">
+    <ng-template #header>
+      <tr>
+        <th>Usuario</th>
+        <th>Módulo</th>
+        <th>Acción realizada</th>
+        <th>Fecha / hora</th>
+        <th></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-r>
+      <tr>
+        <td class="celda-usuario">
+          <div class="avatar" [style.background]="avatarColores(r.usuarioNombre).bg" [style.color]="avatarColores(r.usuarioNombre).color">{{ initials(r.usuarioNombre) }}</div>
+          <span>{{ r.usuarioNombre ?? 'Sistema' }}</span>
+        </td>
+        <td><span class="chip-modulo">{{ r.modulo }}</span></td>
+        <td class="celda-accion">
+          <span class="dot" [style.background]="tipoAccion(r.accion).color"></span>
+          <span class="accion-texto">{{ r.accion }}</span>
+          @if (r.registroAfectado) {
+            <span class="chip-id">{{ r.registroAfectado }}</span>
+          }
+        </td>
+        <td class="celda-fecha">{{ r.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td class="acciones-celda">
+          <button type="button" class="btn-detalle" (click)="abrirDetalle(r)">Ver detalle</button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="vacio">No hay registros que coincidan con los filtros.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    [visible]="detalleVisible()"
+    (visibleChange)="detalleVisible.set($event)"
+    [modal]="true"
+    [style]="{ width: '560px' }"
+    header="Detalle del registro"
+    [draggable]="false"
+    [dismissableMask]="true"
+  >
+    @if (detalleRegistro(); as r) {
+      <div class="detalle-resumen">
+        <div><span class="etq">Usuario</span><span class="val">{{ r.usuarioNombre ?? 'Sistema' }}</span></div>
+        <div><span class="etq">Módulo</span><span class="val">{{ r.modulo }}</span></div>
+        <div><span class="etq">Acción</span><span class="val">{{ r.accion }}</span></div>
+        <div><span class="etq">Fecha</span><span class="val">{{ r.fecha | date: 'dd/MM/yyyy HH:mm:ss' }}</span></div>
+        @if (r.registroAfectado) {
+          <div><span class="etq">Registro afectado</span><span class="val">{{ r.registroAfectado }}</span></div>
+        }
+      </div>
+
+      <div class="detalle-json">
+        <div class="detalle-json-titulo">Valor anterior</div>
+        <pre>{{ formatoJson(r.valorAnterior) }}</pre>
+      </div>
+      <div class="detalle-json">
+        <div class="detalle-json-titulo">Valor nuevo</div>
+        <pre>{{ formatoJson(r.valorNuevo) }}</pre>
+      </div>
+    }
+
+    <div class="acciones">
+      <p-button label="Cerrar" severity="secondary" [text]="true" type="button" (onClick)="detalleVisible.set(false)" />
+    </div>
+  </p-dialog>
+</div>
