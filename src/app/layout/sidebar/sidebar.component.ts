@@ -43,6 +43,7 @@ export class SidebarComponent {
     { label: 'Caja / Fondo', route: '/caja', icon: 'caja', soloAdmin: true },
     { label: 'Gastos', route: '/gastos', icon: 'gastos', soloAdmin: true },
     { label: 'Deudas', route: '/deudas', icon: 'deudas', soloAdmin: true },
+    { label: 'Auditoría', route: '/auditoria', icon: 'auditoria', soloAdmin: true },
   ];
 
   visible(item: NavItem): boolean {

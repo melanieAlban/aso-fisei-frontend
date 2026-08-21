@@ -56,6 +56,12 @@ export const routes: Routes = [
         loadChildren: () => import('./features/deudas/deudas.routes').then((m) => m.DEUDAS_ROUTES),
         canActivate: [permisoGuard(['Admin'])],
       },
+      {
+        path: 'auditoria',
+        loadChildren: () =>
+          import('./features/auditoria/auditoria.routes').then((m) => m.AUDITORIA_ROUTES),
+        canActivate: [permisoGuard(['Admin'])],
+      },
     ],
   },
   {
