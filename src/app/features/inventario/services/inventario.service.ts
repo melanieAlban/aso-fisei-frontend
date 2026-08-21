@@ -60,7 +60,12 @@ export class InventarioService {
       });
   }
 
-  crearProducto(datos: { nombre: string; precioVenta: number }): Observable<RespuestaEstandar<Producto>> {
+  crearProducto(datos: {
+    nombre: string;
+    precioVenta?: number;
+    cobraPorTiempo?: boolean;
+    tarifaPorHora?: number;
+  }): Observable<RespuestaEstandar<Producto>> {
     return this.api.post<RespuestaEstandar<Producto>>('/products', datos).pipe(
       tap((respuesta) => {
         this._productos.update((productos) => [respuesta.data, ...productos]);
@@ -70,7 +75,7 @@ export class InventarioService {
 
   editarProducto(
     id: string,
-    datos: { nombre?: string; precioVenta?: number },
+    datos: { nombre?: string; precioVenta?: number; cobraPorTiempo?: boolean; tarifaPorHora?: number },
   ): Observable<RespuestaEstandar<Producto>> {
     return this.api
       .patch<RespuestaEstandar<Producto>>(`/products/${id}`, datos)

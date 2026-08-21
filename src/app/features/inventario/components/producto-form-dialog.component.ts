@@ -27,10 +27,12 @@ export class ProductoFormDialogComponent {
   readonly errorMensaje = signal('');
 
   readonly esEdicion = computed(() => this.producto() !== null);
+  readonly cobraPorTiempo = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     nombre: ['', Validators.required],
-    precioVenta: ['', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
+    precioVenta: ['', [Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
+    tarifaPorHora: ['', [Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
   });
 
   constructor() {
@@ -40,31 +42,56 @@ export class ProductoFormDialogComponent {
       }
       const actual = this.producto();
       this.errorMensaje.set('');
+      this.cobraPorTiempo.set(actual?.cobraPorTiempo ?? false);
       this.form.reset({
         nombre: actual?.nombre ?? '',
         precioVenta: actual ? String(actual.precioVenta) : '',
+        tarifaPorHora: actual?.tarifaPorHora ? String(actual.tarifaPorHora) : '',
       });
     });
+  }
+
+  toggleCobraPorTiempo(valor: boolean): void {
+    this.cobraPorTiempo.set(valor);
   }
 
   cerrar(): void {
     this.visible.set(false);
   }
 
+  // Plain method (not computed()) so it re-evaluates on every change-detection
+  // cycle — mixes reactive-forms validity (not signal-based) with signals.
+  bloqueado(): boolean {
+    if (this.form.invalid) return true;
+    if (this.cobraPorTiempo()) {
+      return this.form.controls.tarifaPorHora.value.trim() === '';
+    }
+    return this.form.controls.precioVenta.value.trim() === '';
+  }
+
   guardar(): void {
-    if (this.form.invalid) {
+    if (this.bloqueado()) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.cargando.set(true);
     this.errorMensaje.set('');
-    const { nombre, precioVenta } = this.form.getRawValue();
+    const { nombre, precioVenta, tarifaPorHora } = this.form.getRawValue();
     const actual = this.producto();
+    const cobraPorTiempo = this.cobraPorTiempo();
+
+    const datos = {
+      nombre,
+      cobraPorTiempo,
+      ...(cobraPorTiempo
+        ? { tarifaPorHora: Number(tarifaPorHora) }
+        : { precioVenta: Number(precioVenta) }),
+    };
 
     const peticion = actual
-      ? this.inventarioService.editarProducto(actual.id, { nombre, precioVenta: Number(precioVenta) })
-      : this.inventarioService.crearProducto({ nombre, precioVenta: Number(precioVenta) });
+      ? this.inventarioService.editarProducto(actual.id, datos)
+      : this.inventarioService.crearProducto(datos);
 
     peticion.subscribe({
       next: () => {

@@ -337,6 +337,34 @@
   }
 }
 
+.minutos-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 11px;
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #5b6478;
+  }
+
+  input {
+    width: 76px;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #e1e4ea;
+    border-radius: 11px;
+    font: 700 14px 'Plus Jakarta Sans', sans-serif;
+    color: #0a1638;
+    outline: none;
+
+    &:focus {
+      border-color: #12d897;
+    }
+  }
+}
+
 .alquiler-toggle {
   display: flex;
   align-items: center;

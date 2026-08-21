@@ -16,6 +16,7 @@ interface LineaCarrito {
   producto: Producto;
   cantidad: number;
   esAlquiler: boolean;
+  duracionMinutos?: number;
   lineTotal: number;
 }
 
@@ -46,7 +47,9 @@ export class NuevaVentaComponent implements OnInit {
   readonly esAdmin = computed(() => this.authService.tieneRol('Admin'));
 
   readonly query = signal('');
-  readonly carrito = signal<Record<string, { cantidad: number; esAlquiler: boolean }>>({});
+  readonly carrito = signal<
+    Record<string, { cantidad: number; esAlquiler: boolean; duracionMinutos?: number }>
+  >({});
   readonly metodoPago = signal<MetodoPago>('EFECTIVO');
   readonly montoRecibido = signal('');
   readonly registrando = signal(false);
@@ -66,15 +69,25 @@ export class NuevaVentaComponent implements OnInit {
     for (const [productoId, item] of Object.entries(carrito)) {
       const producto = productos.find((p) => p.id === productoId);
       if (!producto) continue;
+      const precioUnitario = producto.cobraPorTiempo
+        ? this.calcularPrecioPorTiempo(producto.tarifaPorHora ?? 0, item.duracionMinutos ?? 0)
+        : producto.precioVenta;
       lineas.push({
         producto,
         cantidad: item.cantidad,
         esAlquiler: item.esAlquiler,
-        lineTotal: producto.precioVenta * item.cantidad,
+        duracionMinutos: item.duracionMinutos,
+        lineTotal: precioUnitario * item.cantidad,
       });
     }
     return lineas;
   });
+
+  // Cálculo solo para mostrar en vivo en el carrito — el precio real y definitivo
+  // lo calcula el backend al confirmar la venta.
+  calcularPrecioPorTiempo(tarifaPorHora: number, minutos: number): number {
+    return Math.round((tarifaPorHora * (minutos / 60) + Number.EPSILON) * 100) / 100;
+  }
 
   readonly totalCarrito = computed(() => this.lineasCarrito().reduce((acc, l) => acc + l.lineTotal, 0));
   readonly cantidadItems = computed(() =>
@@ -97,11 +110,27 @@ export class NuevaVentaComponent implements OnInit {
 
   agregarProducto(producto: Producto): void {
     if (producto.stockActual <= 0) return;
+
+    if (producto.cobraPorTiempo) {
+      this.carrito.update((c) => {
+        if (c[producto.id]) return c;
+        return { ...c, [producto.id]: { cantidad: 1, esAlquiler: false, duracionMinutos: 60 } };
+      });
+      return;
+    }
+
     this.carrito.update((c) => {
       const actual = c[producto.id]?.cantidad ?? 0;
       if (actual >= producto.stockActual) return c;
       return { ...c, [producto.id]: { cantidad: actual + 1, esAlquiler: c[producto.id]?.esAlquiler ?? false } };
     });
+  }
+
+  actualizarMinutos(productoId: string, minutos: number): void {
+    this.carrito.update((c) => ({
+      ...c,
+      [productoId]: { ...c[productoId], duracionMinutos: Math.max(0, minutos || 0) },
+    }));
   }
 
   incrementar(productoId: string, stockActual: number): void {
@@ -146,11 +175,14 @@ export class NuevaVentaComponent implements OnInit {
 
   registrarBloqueado(): boolean {
     const hasItems = this.lineasCarrito().length > 0;
+    const duracionInvalida = this.lineasCarrito().some(
+      (l) => l.producto.cobraPorTiempo && (!l.duracionMinutos || l.duracionMinutos <= 0),
+    );
     const esEfectivo = this.metodoPago() === 'EFECTIVO';
     const recibido = parseFloat(this.montoRecibido()) || 0;
     const total = this.totalCarrito();
     const montoInsuficiente = esEfectivo && recibido > 0 && recibido < total;
-    return !hasItems || montoInsuficiente || this.registrando();
+    return !hasItems || duracionInvalida || montoInsuficiente || this.registrando();
   }
 
   registrar(): void {
@@ -160,6 +192,7 @@ export class NuevaVentaComponent implements OnInit {
       productoId: l.producto.id,
       cantidad: l.cantidad,
       esAlquiler: l.esAlquiler || undefined,
+      duracionMinutos: l.producto.cobraPorTiempo ? l.duracionMinutos : undefined,
     }));
 
     this.registrando.set(true);
