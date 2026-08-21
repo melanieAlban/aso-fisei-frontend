@@ -15,6 +15,7 @@ interface LineaVentaInput {
   productoId: string;
   cantidad: number;
   esAlquiler?: boolean;
+  duracionMinutos?: number;
 }
 
 @Injectable({ providedIn: 'root' })

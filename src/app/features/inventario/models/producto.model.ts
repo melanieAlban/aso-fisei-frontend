@@ -6,4 +6,6 @@ export interface Producto {
   stockActual: number;
   activo: boolean;
   createdAt: string;
+  cobraPorTiempo: boolean;
+  tarifaPorHora: number | null;
 }

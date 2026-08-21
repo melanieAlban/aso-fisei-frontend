@@ -58,7 +58,13 @@
                 </div>
               </div>
               <div class="fila-bottom">
-                <span class="precio">{{ p.precioVenta | number: '1.2-2' }}</span>
+                <span class="precio">
+                  @if (p.cobraPorTiempo) {
+                    {{ p.tarifaPorHora | number: '1.2-2' }}/h
+                  } @else {
+                    {{ p.precioVenta | number: '1.2-2' }}
+                  }
+                </span>
                 <span class="btn-add"><i class="pi pi-plus"></i></span>
               </div>
             </button>
@@ -85,7 +91,13 @@
                 <div class="linea-top">
                   <div class="linea-info">
                     <div class="linea-nombre">{{ l.producto.nombre }}</div>
-                    <div class="linea-unit">{{ l.producto.precioVenta | number: '1.2-2' }} c/u</div>
+                    <div class="linea-unit">
+                      @if (l.producto.cobraPorTiempo) {
+                        {{ l.producto.tarifaPorHora | number: '1.2-2' }}/h
+                      } @else {
+                        {{ l.producto.precioVenta | number: '1.2-2' }} c/u
+                      }
+                    </div>
                   </div>
                   <div class="linea-total">{{ l.lineTotal | number: '1.2-2' }}</div>
                   <button type="button" class="btn-quitar" aria-label="Quitar del carrito" (click)="quitarDelCarrito(l.producto.id)">
@@ -93,11 +105,25 @@
                   </button>
                 </div>
 
-                <div class="stepper">
-                  <button type="button" (click)="decrementar(l.producto.id)" aria-label="Quitar uno"><i class="pi pi-minus"></i></button>
-                  <div class="qty">{{ l.cantidad }}</div>
-                  <button type="button" (click)="incrementar(l.producto.id, l.producto.stockActual)" [disabled]="l.cantidad >= l.producto.stockActual" aria-label="Agregar uno"><i class="pi pi-plus"></i></button>
-                </div>
+                @if (l.producto.cobraPorTiempo) {
+                  <div class="minutos-input">
+                    <label for="minutos-{{ l.producto.id }}">Minutos</label>
+                    <input
+                      id="minutos-{{ l.producto.id }}"
+                      type="number"
+                      min="1"
+                      [value]="l.duracionMinutos ?? ''"
+                      (input)="actualizarMinutos(l.producto.id, +$any($event.target).value)"
+                      placeholder="Ej. 45"
+                    />
+                  </div>
+                } @else {
+                  <div class="stepper">
+                    <button type="button" (click)="decrementar(l.producto.id)" aria-label="Quitar uno"><i class="pi pi-minus"></i></button>
+                    <div class="qty">{{ l.cantidad }}</div>
+                    <button type="button" (click)="incrementar(l.producto.id, l.producto.stockActual)" [disabled]="l.cantidad >= l.producto.stockActual" aria-label="Agregar uno"><i class="pi pi-plus"></i></button>
+                  </div>
+                }
 
                 <label class="alquiler-toggle">
                   <input type="checkbox" [checked]="l.esAlquiler" (change)="toggleAlquiler(l.producto.id)" />
