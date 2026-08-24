@@ -29,13 +29,24 @@ export class CompraDialogComponent {
   readonly fuentePago = signal<FuentePago>('EFECTIVO_CAJA');
   readonly moneda = signal<MetodoPago | null>(null);
 
-  readonly requiereMoneda = computed(() => this.fuentePago() === 'FONDO_GENERAL');
-
   readonly form = this.fb.nonNullable.group({
     productoId: ['', Validators.required],
     cantidad: ['', [Validators.required, Validators.pattern(/^[1-9]\d*$/)]],
-    costoUnitario: ['', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
+    // Opcional: se puede dejar en blanco para productos sin costo de adquisición real.
+    costoUnitario: ['', [Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
   });
+
+  // Plain methods (not computed()) — leen form.controls.*.value, que no es un
+  // signal, así que computed() los cachearía sin reevaluar en cada cambio.
+  costoIngresado(): number {
+    return Number(this.form.controls.costoUnitario.value) || 0;
+  }
+
+  // La moneda del Fondo General solo es obligatoria si la compra realmente
+  // mueve dinero — con costo 0 (copias, servicios) no hay nada que descontar.
+  requiereMoneda(): boolean {
+    return this.fuentePago() === 'FONDO_GENERAL' && this.costoIngresado() > 0;
+  }
 
   constructor() {
     effect(() => {
@@ -96,7 +107,7 @@ export class CompraDialogComponent {
       .registrarCompra({
         productoId,
         cantidad: Number(cantidad),
-        costoUnitario: Number(costoUnitario),
+        ...(costoUnitario.trim() !== '' ? { costoUnitario: Number(costoUnitario) } : {}),
         fuentePago: this.fuentePago(),
         ...(this.requiereMoneda() ? { moneda: this.moneda()! } : {}),
       })

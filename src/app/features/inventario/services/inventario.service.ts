@@ -85,7 +85,7 @@ export class InventarioService {
   registrarCompra(datos: {
     productoId: string;
     cantidad: number;
-    costoUnitario: number;
+    costoUnitario?: number;
     fuentePago: FuentePago;
     moneda?: MetodoPago;
   }): Observable<RespuestaEstandar<ResultadoMovimiento>> {
