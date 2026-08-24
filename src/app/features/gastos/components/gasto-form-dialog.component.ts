@@ -4,8 +4,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { FuentePago, MetodoPago } from '../models/gasto.model';
+import { FuentePago } from '../models/gasto.model';
 import { GastosService } from '../services/gastos.service';
+
+type ModoMoneda = 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
 
 @Component({
   selector: 'app-gasto-form-dialog',
@@ -25,7 +27,7 @@ export class GastoFormDialogComponent {
   readonly cargando = signal(false);
   readonly errorMensaje = signal('');
   readonly fuentePago = signal<FuentePago>('EFECTIVO_CAJA');
-  readonly moneda = signal<MetodoPago | null>(null);
+  readonly modoMoneda = signal<ModoMoneda | null>(null);
   readonly sugerenciasVisibles = signal(false);
 
   readonly requiereMoneda = computed(() => this.fuentePago() === 'FONDO_GENERAL');
@@ -34,6 +36,8 @@ export class GastoFormDialogComponent {
     descripcion: ['', Validators.required],
     monto: ['', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
     categoria: ['', Validators.required],
+    montoEfectivoFondo: ['', [Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
+    montoTransferenciaFondo: ['', [Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
   });
 
   readonly sugerencias = computed(() => {
@@ -50,14 +54,20 @@ export class GastoFormDialogComponent {
       }
       this.errorMensaje.set('');
       this.fuentePago.set('EFECTIVO_CAJA');
-      this.moneda.set(null);
-      this.form.reset({ descripcion: '', monto: '', categoria: '' });
+      this.modoMoneda.set(null);
+      this.form.reset({
+        descripcion: '',
+        monto: '',
+        categoria: '',
+        montoEfectivoFondo: '',
+        montoTransferenciaFondo: '',
+      });
     });
   }
 
   elegirCaja(): void {
     this.fuentePago.set('EFECTIVO_CAJA');
-    this.moneda.set(null);
+    this.modoMoneda.set(null);
   }
 
   elegirFondo(): void {
@@ -65,11 +75,15 @@ export class GastoFormDialogComponent {
   }
 
   elegirEfectivo(): void {
-    this.moneda.set('EFECTIVO');
+    this.modoMoneda.set('EFECTIVO');
   }
 
   elegirTransferencia(): void {
-    this.moneda.set('TRANSFERENCIA');
+    this.modoMoneda.set('TRANSFERENCIA');
+  }
+
+  elegirMixto(): void {
+    this.modoMoneda.set('MIXTO');
   }
 
   seleccionarCategoria(categoria: string): void {
@@ -77,10 +91,40 @@ export class GastoFormDialogComponent {
     this.sugerenciasVisibles.set(false);
   }
 
+  private aCentavos(valor: number): number {
+    return Math.round(valor * 100);
+  }
+
+  // Montos que realmente se enviarán, según el modo de moneda elegido.
+  private montosFondo(): { montoEfectivoFondo: number; montoTransferenciaFondo: number } {
+    const monto = Number(this.form.controls.monto.value) || 0;
+    switch (this.modoMoneda()) {
+      case 'EFECTIVO':
+        return { montoEfectivoFondo: monto, montoTransferenciaFondo: 0 };
+      case 'TRANSFERENCIA':
+        return { montoEfectivoFondo: 0, montoTransferenciaFondo: monto };
+      case 'MIXTO':
+        return {
+          montoEfectivoFondo: Number(this.form.controls.montoEfectivoFondo.value) || 0,
+          montoTransferenciaFondo: Number(this.form.controls.montoTransferenciaFondo.value) || 0,
+        };
+      default:
+        return { montoEfectivoFondo: 0, montoTransferenciaFondo: 0 };
+    }
+  }
+
   // Plain method (not computed()) so it re-evaluates on every change-detection
   // cycle — mixes reactive-forms validity (not signal-based) with signals.
   bloqueado(): boolean {
-    return this.form.invalid || (this.requiereMoneda() && this.moneda() === null);
+    if (this.form.invalid) return true;
+    if (!this.requiereMoneda()) return false;
+    if (this.modoMoneda() === null) return true;
+    if (this.modoMoneda() === 'MIXTO') {
+      const monto = Number(this.form.controls.monto.value) || 0;
+      const { montoEfectivoFondo, montoTransferenciaFondo } = this.montosFondo();
+      return this.aCentavos(montoEfectivoFondo) + this.aCentavos(montoTransferenciaFondo) !== this.aCentavos(monto);
+    }
+    return false;
   }
 
   cerrar(): void {
@@ -103,7 +147,7 @@ export class GastoFormDialogComponent {
         monto: Number(monto),
         categoria,
         fuentePago: this.fuentePago(),
-        ...(this.requiereMoneda() ? { moneda: this.moneda()! } : {}),
+        ...(this.requiereMoneda() ? this.montosFondo() : {}),
       })
       .subscribe({
         next: () => {

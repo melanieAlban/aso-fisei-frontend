@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { RespuestaEstandar } from '../../../shared/models/usuario.model';
-import { FuentePago, Gasto, MetodoPago } from '../models/gasto.model';
+import { FuentePago, Gasto } from '../models/gasto.model';
 
 interface ListarGastosData {
   gastos: Gasto[];
@@ -51,7 +51,8 @@ export class GastosService {
     monto: number;
     categoria: string;
     fuentePago: FuentePago;
-    moneda?: MetodoPago;
+    montoEfectivoFondo?: number;
+    montoTransferenciaFondo?: number;
   }): Observable<RespuestaEstandar<Gasto>> {
     return this.api.post<RespuestaEstandar<Gasto>>('/expenses', datos).pipe(
       tap((respuesta) => {

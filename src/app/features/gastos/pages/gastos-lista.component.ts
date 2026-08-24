@@ -76,7 +76,15 @@ export class GastosListaComponent implements OnInit {
   }
 
   fuenteLabel(gasto: Gasto): string {
-    return gasto.fuentePago === 'EFECTIVO_CAJA' ? 'Efectivo de caja' : `Fondo General (${gasto.moneda === 'EFECTIVO' ? 'efectivo' : 'transferencia'})`;
+    if (gasto.fuentePago === 'EFECTIVO_CAJA') {
+      return 'Efectivo de caja';
+    }
+    const tieneEfectivo = gasto.montoEfectivoFondo > 0;
+    const tieneTransferencia = gasto.montoTransferenciaFondo > 0;
+    if (tieneEfectivo && tieneTransferencia) {
+      return `Fondo General (efectivo ${gasto.montoEfectivoFondo.toFixed(2)} + transferencia ${gasto.montoTransferenciaFondo.toFixed(2)})`;
+    }
+    return `Fondo General (${tieneTransferencia ? 'transferencia' : 'efectivo'})`;
   }
 
   abrirCrear(): void {

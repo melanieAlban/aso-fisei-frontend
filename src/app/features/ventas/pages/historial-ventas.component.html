@@ -11,6 +11,7 @@
         <option value="">Todos</option>
         <option value="EFECTIVO">Efectivo</option>
         <option value="TRANSFERENCIA">Transferencia</option>
+        <option value="MIXTO">Mixto</option>
       </select>
     </div>
     <div class="campo">
@@ -46,7 +47,10 @@
         <td class="celda-muted">{{ fila.precioUnit | number: '1.2-2' }}</td>
         <td class="celda-total" [style.text-decoration]="fila.anulado ? 'line-through' : 'none'">{{ fila.total | number: '1.2-2' }}</td>
         <td>
-          <p-tag [value]="fila.metodo === 'EFECTIVO' ? 'Efectivo' : 'Transferencia'" [severity]="fila.metodo === 'EFECTIVO' ? 'success' : 'info'" />
+          <p-tag
+            [value]="fila.metodo === 'EFECTIVO' ? 'Efectivo' : fila.metodo === 'TRANSFERENCIA' ? 'Transferencia' : 'Mixto'"
+            [severity]="fila.metodo === 'EFECTIVO' ? 'success' : fila.metodo === 'TRANSFERENCIA' ? 'info' : 'warn'"
+          />
         </td>
         <td>
           <p-tag [value]="fila.estado" [severity]="fila.anulado ? 'danger' : 'success'" />

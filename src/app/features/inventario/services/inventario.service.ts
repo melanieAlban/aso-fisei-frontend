@@ -5,7 +5,6 @@ import { RespuestaEstandar } from '../../../shared/models/usuario.model';
 import {
   DireccionAjuste,
   FuentePago,
-  MetodoPago,
   MovimientoInventario,
 } from '../models/movimiento-inventario.model';
 import { Producto } from '../models/producto.model';
@@ -85,9 +84,10 @@ export class InventarioService {
   registrarCompra(datos: {
     productoId: string;
     cantidad: number;
-    costoUnitario: number;
+    costoUnitario?: number;
     fuentePago: FuentePago;
-    moneda?: MetodoPago;
+    montoEfectivoFondo?: number;
+    montoTransferenciaFondo?: number;
   }): Observable<RespuestaEstandar<ResultadoMovimiento>> {
     return this.api
       .post<RespuestaEstandar<ResultadoMovimiento>>('/inventory/purchases', datos)

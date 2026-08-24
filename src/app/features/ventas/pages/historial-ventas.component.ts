@@ -17,7 +17,7 @@ interface FilaVenta {
   cantidad: number;
   precioUnit: number;
   total: number;
-  metodo: MetodoPago;
+  metodo: MetodoPago | null;
   estado: string;
   anulado: boolean;
   fecha: string;
@@ -43,7 +43,7 @@ export class HistorialVentasComponent implements OnInit {
 
   readonly esAdmin = computed(() => this.authService.tieneRol('Admin'));
 
-  readonly fMetodo = signal<MetodoPago | ''>('');
+  readonly fMetodo = signal<MetodoPago | 'MIXTO' | ''>('');
   readonly fDesde = signal('');
   readonly fHasta = signal('');
 
@@ -83,7 +83,7 @@ export class HistorialVentasComponent implements OnInit {
   }
 
   onFMetodo(valor: string): void {
-    this.fMetodo.set(valor as MetodoPago | '');
+    this.fMetodo.set(valor as MetodoPago | 'MIXTO' | '');
     this.buscar();
   }
 

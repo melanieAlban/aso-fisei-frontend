@@ -143,15 +143,18 @@
         <div class="carrito-footer">
           <div class="metodo-label">Método de pago</div>
           <div class="metodo-toggle">
-            <button type="button" [class.active]="metodoPago() === 'EFECTIVO'" (click)="elegirEfectivo()">
+            <button type="button" [class.active]="modoPago() === 'EFECTIVO'" (click)="elegirEfectivo()">
               <i class="pi pi-wallet"></i> Efectivo
             </button>
-            <button type="button" [class.active]="metodoPago() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">
+            <button type="button" [class.active]="modoPago() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">
               <i class="pi pi-sync"></i> Transferencia
+            </button>
+            <button type="button" [class.active]="modoPago() === 'MIXTO'" (click)="elegirMixto()">
+              <i class="pi pi-arrows-h"></i> Mixto
             </button>
           </div>
 
-          @if (metodoPago() === 'EFECTIVO') {
+          @if (modoPago() === 'EFECTIVO') {
             <div class="pago-grid">
               <div>
                 <div class="mini-label">Monto recibido</div>
@@ -165,6 +168,26 @@
                 <div class="cambio-box" [class.negativo]="cambio() < 0">{{ (cambio() > 0 ? cambio() : 0) | number: '1.2-2' }}</div>
               </div>
             </div>
+          }
+
+          @if (modoPago() === 'MIXTO') {
+            <div class="pago-grid">
+              <div>
+                <div class="mini-label">Efectivo</div>
+                <div class="campo-monto">
+                  <span>$</span>
+                  <input type="text" inputmode="decimal" [value]="montoEfectivoMixto()" (input)="montoEfectivoMixto.set($any($event.target).value)" placeholder="0.00" />
+                </div>
+              </div>
+              <div>
+                <div class="mini-label">Transferencia</div>
+                <div class="campo-monto">
+                  <span>$</span>
+                  <input type="text" inputmode="decimal" [value]="montoTransferenciaMixto()" (input)="montoTransferenciaMixto.set($any($event.target).value)" placeholder="0.00" />
+                </div>
+              </div>
+            </div>
+            <p class="mixto-hint">Efectivo + Transferencia debe sumar exactamente el total ({{ totalCarrito() | number: '1.2-2' }}).</p>
           }
 
           <div class="total-row">
@@ -186,7 +209,7 @@
         <div class="success-msg">La transacción se guardó correctamente.</div>
         <div class="success-detalle">
           <div><span>Total cobrado</span><span>{{ venta.total | number: '1.2-2' }}</span></div>
-          <div><span>Método</span><span>{{ venta.metodoPago === 'EFECTIVO' ? 'Efectivo' : 'Transferencia' }}</span></div>
+          <div><span>Método</span><span>{{ venta.metodoPago === 'EFECTIVO' ? 'Efectivo' : venta.metodoPago === 'TRANSFERENCIA' ? 'Transferencia' : 'Mixto' }}</span></div>
         </div>
         <p-button label="Registrar otra venta" styleClass="w-full" (onClick)="registrarOtra()" />
       </div>

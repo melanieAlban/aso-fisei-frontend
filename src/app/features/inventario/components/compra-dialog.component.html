@@ -32,7 +32,7 @@
     </div>
 
     <div class="campo">
-      <label for="costoUnitario">Costo unitario</label>
+      <label for="costoUnitario">Costo unitario <span class="hint">(opcional — déjalo vacío si no tiene costo)</span></label>
       <div class="campo-monto">
         <span>$</span>
         <input id="costoUnitario" type="text" inputmode="decimal" formControlName="costoUnitario" placeholder="0.00" />
@@ -51,10 +51,29 @@
       <div class="campo">
         <label>Moneda <span class="obligatorio">(obligatorio)</span></label>
         <div class="toggle-row">
-          <button type="button" class="toggle" [class.active]="moneda() === 'EFECTIVO'" (click)="elegirEfectivo()">Efectivo</button>
-          <button type="button" class="toggle" [class.active]="moneda() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">Transferencia</button>
+          <button type="button" class="toggle" [class.active]="modoMoneda() === 'EFECTIVO'" (click)="elegirEfectivo()">Efectivo</button>
+          <button type="button" class="toggle" [class.active]="modoMoneda() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">Transferencia</button>
+          <button type="button" class="toggle" [class.active]="modoMoneda() === 'MIXTO'" (click)="elegirMixto()">Mixto</button>
         </div>
       </div>
+
+      @if (modoMoneda() === 'MIXTO') {
+        <div class="campo">
+          <label>Efectivo</label>
+          <div class="campo-monto">
+            <span>$</span>
+            <input type="text" inputmode="decimal" formControlName="montoEfectivoFondo" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="campo">
+          <label>Transferencia</label>
+          <div class="campo-monto">
+            <span>$</span>
+            <input type="text" inputmode="decimal" formControlName="montoTransferenciaFondo" placeholder="0.00" />
+          </div>
+        </div>
+        <p class="hint mixto-hint">Efectivo + Transferencia debe sumar exactamente el costo total ({{ costoTotal() | number: '1.2-2' }}).</p>
+      }
     }
 
     @if (errorMensaje()) {

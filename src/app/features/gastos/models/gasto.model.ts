@@ -9,7 +9,10 @@ export interface Gasto {
   monto: number;
   categoria: string;
   fuentePago: FuentePago;
-  moneda: MetodoPago | null;
+  // Solo aplican cuando fuentePago es FONDO_GENERAL — pueden ser ambos > 0
+  // para un pago mixto.
+  montoEfectivoFondo: number;
+  montoTransferenciaFondo: number;
   generadoAutomaticamente: boolean;
   estado: EstadoGasto;
   motivoAnulacion: string | null;

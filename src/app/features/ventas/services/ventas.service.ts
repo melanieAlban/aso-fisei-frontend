@@ -28,7 +28,9 @@ export class VentasService {
   private readonly _cargando = signal(false);
   readonly cargando = this._cargando.asReadonly();
 
-  cargarVentas(filtros: { metodoPago?: MetodoPago; from?: string; to?: string } = {}): void {
+  cargarVentas(
+    filtros: { metodoPago?: MetodoPago | 'MIXTO'; from?: string; to?: string } = {},
+  ): void {
     this._cargando.set(true);
     const params = new URLSearchParams();
     if (filtros.from) params.set('from', filtros.from);
@@ -37,7 +39,9 @@ export class VentasService {
     this.api.get<RespuestaEstandar<ListarVentasData>>(`/sales${qs ? '?' + qs : ''}`).subscribe({
       next: (respuesta) => {
         let ventas = respuesta.data.ventas;
-        if (filtros.metodoPago) {
+        if (filtros.metodoPago === 'MIXTO') {
+          ventas = ventas.filter((v) => v.venta.metodoPago === null);
+        } else if (filtros.metodoPago) {
           ventas = ventas.filter((v) => v.venta.metodoPago === filtros.metodoPago);
         }
         this._ventas.set(ventas);
@@ -48,7 +52,8 @@ export class VentasService {
   }
 
   registrarVenta(datos: {
-    metodoPago: MetodoPago;
+    montoEfectivo: number;
+    montoTransferencia: number;
     lineas: LineaVentaInput[];
   }): Observable<RespuestaEstandar<VentaConDetalle>> {
     return this.api.post<RespuestaEstandar<VentaConDetalle>>('/sales', datos).pipe(

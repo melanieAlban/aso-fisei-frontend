@@ -19,7 +19,10 @@ export interface Venta {
   id: string;
   usuarioId: string;
   cajaId: string;
-  metodoPago: MetodoPago;
+  // null si fue pago mixto (ver montoEfectivo/montoTransferencia)
+  metodoPago: MetodoPago | null;
+  montoEfectivo: number;
+  montoTransferencia: number;
   total: number;
   fecha: string;
 }
