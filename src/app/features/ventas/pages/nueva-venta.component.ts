@@ -77,7 +77,7 @@ export class NuevaVentaComponent implements OnInit {
         cantidad: item.cantidad,
         esAlquiler: item.esAlquiler,
         duracionMinutos: item.duracionMinutos,
-        lineTotal: precioUnitario * item.cantidad,
+        lineTotal: this.redondearDosDecimales(precioUnitario * item.cantidad),
       });
     }
     return lineas;
@@ -86,17 +86,30 @@ export class NuevaVentaComponent implements OnInit {
   // Cálculo solo para mostrar en vivo en el carrito — el precio real y definitivo
   // lo calcula el backend al confirmar la venta.
   calcularPrecioPorTiempo(tarifaPorHora: number, minutos: number): number {
-    return Math.round((tarifaPorHora * (minutos / 60) + Number.EPSILON) * 100) / 100;
+    return this.redondearDosDecimales(tarifaPorHora * (minutos / 60));
   }
 
-  readonly totalCarrito = computed(() => this.lineasCarrito().reduce((acc, l) => acc + l.lineTotal, 0));
+  // Evita errores de precisión de punto flotante (ej. 0.1 + 0.2 !== 0.3) al sumar
+  // montos, que causaban que "monto recibido === total exacto" se bloqueara como
+  // si faltara dinero.
+  private redondearDosDecimales(valor: number): number {
+    return Math.round((valor + Number.EPSILON) * 100) / 100;
+  }
+
+  private aCentavos(valor: number): number {
+    return Math.round(valor * 100);
+  }
+
+  readonly totalCarrito = computed(() =>
+    this.redondearDosDecimales(this.lineasCarrito().reduce((acc, l) => acc + l.lineTotal, 0)),
+  );
   readonly cantidadItems = computed(() =>
     Object.values(this.carrito()).reduce((acc, i) => acc + i.cantidad, 0),
   );
 
   readonly cambio = computed(() => {
     const recibido = parseFloat(this.montoRecibido()) || 0;
-    return recibido - this.totalCarrito();
+    return (this.aCentavos(recibido) - this.aCentavos(this.totalCarrito())) / 100;
   });
 
   ngOnInit(): void {
@@ -181,7 +194,7 @@ export class NuevaVentaComponent implements OnInit {
     const esEfectivo = this.metodoPago() === 'EFECTIVO';
     const recibido = parseFloat(this.montoRecibido()) || 0;
     const total = this.totalCarrito();
-    const montoInsuficiente = esEfectivo && recibido > 0 && recibido < total;
+    const montoInsuficiente = esEfectivo && recibido > 0 && this.aCentavos(recibido) < this.aCentavos(total);
     return !hasItems || duracionInvalida || montoInsuficiente || this.registrando();
   }
 
