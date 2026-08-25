@@ -153,15 +153,28 @@ export class NuevaVentaComponent implements OnInit {
     });
   }
 
+  // Al editar minutos, la hora de inicio se mantiene fija y la hora fin se
+  // recalcula sola (si todavía no hay hora de inicio, se usa la hora actual).
   actualizarMinutos(productoId: string, minutos: number): void {
-    this.carrito.update((c) => ({
-      ...c,
-      [productoId]: { ...c[productoId], duracionMinutos: Math.max(0, minutos || 0) },
-    }));
+    this.carrito.update((c) => {
+      const item = c[productoId];
+      if (!item) return c;
+      const duracionMinutos = Math.max(0, minutos || 0);
+      const horaInicio = item.horaInicio ?? this.formatearHora(new Date());
+      const horaFin = this.formatearHora(this.sumarMinutos(horaInicio, duracionMinutos));
+      return { ...c, [productoId]: { ...item, duracionMinutos, horaInicio, horaFin } };
+    });
   }
 
   private formatearHora(fecha: Date): string {
     return `${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
+  }
+
+  private sumarMinutos(hora: string, minutos: number): Date {
+    const [h, m] = hora.split(':').map(Number);
+    const base = new Date();
+    base.setHours(h, m, 0, 0);
+    return new Date(base.getTime() + minutos * 60000);
   }
 
   // Minutos entre dos horas "HH:mm" del mismo día — si la hora fin es menor o

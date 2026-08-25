@@ -107,6 +107,17 @@
 
                 @if (l.producto.cobraPorTiempo) {
                   <div class="horas-input">
+                    <div class="campo-hora campo-minutos">
+                      <label for="minutos-{{ l.producto.id }}">Minutos</label>
+                      <input
+                        id="minutos-{{ l.producto.id }}"
+                        type="number"
+                        min="1"
+                        [value]="l.duracionMinutos ?? ''"
+                        (input)="actualizarMinutos(l.producto.id, +$any($event.target).value)"
+                        placeholder="Ej. 45"
+                      />
+                    </div>
                     <div class="campo-hora">
                       <label for="hora-inicio-{{ l.producto.id }}">Hora inicio</label>
                       <input
@@ -125,7 +136,6 @@
                         (input)="actualizarHoraFin(l.producto.id, $any($event.target).value)"
                       />
                     </div>
-                    <span class="duracion-hint">{{ l.duracionMinutos ?? 0 }} min</span>
                   </div>
                 } @else {
                   <div class="stepper">
