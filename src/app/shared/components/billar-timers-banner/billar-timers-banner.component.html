@@ -1,0 +1,16 @@
+@if (temporizadoresVista().length > 0) {
+  <div class="banner-temporizadores">
+    @for (t of temporizadoresVista(); track t.id) {
+      <div class="chip" [class.vencido]="t.vencido">
+        <i class="pi" [class.pi-clock]="!t.vencido" [class.pi-exclamation-triangle]="t.vencido"></i>
+        <div class="chip-info">
+          <span class="chip-nombre">{{ t.nombre }}</span>
+          <span class="chip-horas">{{ t.horaInicioTexto }} – {{ t.horaFinTexto }} · {{ t.restanteTexto }}</span>
+        </div>
+        <button type="button" class="chip-cerrar" aria-label="Quitar temporizador" (click)="quitar(t.id)">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+    }
+  </div>
+}

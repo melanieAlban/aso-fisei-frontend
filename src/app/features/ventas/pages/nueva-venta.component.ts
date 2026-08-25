@@ -11,6 +11,7 @@ import { Producto } from '../../inventario/models/producto.model';
 import { MetodoPago } from '../models/venta.model';
 import { VentasService } from '../services/ventas.service';
 import { CajaService } from '../../caja/services/caja.service';
+import { BillarTimerService } from '../services/billar-timer.service';
 
 type ModoPago = 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
 
@@ -19,6 +20,8 @@ interface LineaCarrito {
   cantidad: number;
   esAlquiler: boolean;
   duracionMinutos?: number;
+  horaInicio?: string;
+  horaFin?: string;
   lineTotal: number;
 }
 
@@ -40,6 +43,7 @@ export class NuevaVentaComponent implements OnInit {
   private ventasService = inject(VentasService);
   private authService = inject(AuthService);
   private messageService = inject(MessageService);
+  private billarTimerService = inject(BillarTimerService);
 
   readonly productos = this.inventarioService.productos;
   readonly cajaActual = this.cajaService.cajaActual;
@@ -50,7 +54,10 @@ export class NuevaVentaComponent implements OnInit {
 
   readonly query = signal('');
   readonly carrito = signal<
-    Record<string, { cantidad: number; esAlquiler: boolean; duracionMinutos?: number }>
+    Record<
+      string,
+      { cantidad: number; esAlquiler: boolean; duracionMinutos?: number; horaInicio?: string; horaFin?: string }
+    >
   >({});
   readonly modoPago = signal<ModoPago>('EFECTIVO');
   readonly montoRecibido = signal('');
@@ -81,6 +88,8 @@ export class NuevaVentaComponent implements OnInit {
         cantidad: item.cantidad,
         esAlquiler: item.esAlquiler,
         duracionMinutos: item.duracionMinutos,
+        horaInicio: item.horaInicio,
+        horaFin: item.horaFin,
         lineTotal: this.redondearDosDecimales(precioUnitario * item.cantidad),
       });
     }
@@ -126,7 +135,13 @@ export class NuevaVentaComponent implements OnInit {
     if (producto.cobraPorTiempo) {
       this.carrito.update((c) => {
         if (c[producto.id]) return c;
-        return { ...c, [producto.id]: { cantidad: 1, esAlquiler: false, duracionMinutos: 60 } };
+        const ahora = new Date();
+        const horaInicio = this.formatearHora(ahora);
+        const horaFin = this.formatearHora(new Date(ahora.getTime() + 60 * 60000));
+        return {
+          ...c,
+          [producto.id]: { cantidad: 1, esAlquiler: false, duracionMinutos: 60, horaInicio, horaFin },
+        };
       });
       return;
     }
@@ -143,6 +158,56 @@ export class NuevaVentaComponent implements OnInit {
       ...c,
       [productoId]: { ...c[productoId], duracionMinutos: Math.max(0, minutos || 0) },
     }));
+  }
+
+  private formatearHora(fecha: Date): string {
+    return `${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
+  }
+
+  // Minutos entre dos horas "HH:mm" del mismo día — si la hora fin es menor o
+  // igual a la de inicio, se asume que cruza la medianoche (alquiler nocturno).
+  private calcularMinutosEntreHoras(horaInicio: string, horaFin: string): number {
+    const [hI, mI] = horaInicio.split(':').map(Number);
+    const [hF, mF] = horaFin.split(':').map(Number);
+    let minutos = hF * 60 + mF - (hI * 60 + mI);
+    if (minutos <= 0) minutos += 24 * 60;
+    return minutos;
+  }
+
+  actualizarHoraInicio(productoId: string, hora: string): void {
+    this.carrito.update((c) => {
+      const item = c[productoId];
+      if (!item || !hora) return c;
+      const horaFin = item.horaFin ?? hora;
+      return {
+        ...c,
+        [productoId]: { ...item, horaInicio: hora, duracionMinutos: this.calcularMinutosEntreHoras(hora, horaFin) },
+      };
+    });
+  }
+
+  actualizarHoraFin(productoId: string, hora: string): void {
+    this.carrito.update((c) => {
+      const item = c[productoId];
+      if (!item || !hora) return c;
+      const horaInicio = item.horaInicio ?? hora;
+      return {
+        ...c,
+        [productoId]: { ...item, horaFin: hora, duracionMinutos: this.calcularMinutosEntreHoras(horaInicio, hora) },
+      };
+    });
+  }
+
+  // Timestamp real (hoy o mañana si cruza medianoche) en el que vence el alquiler.
+  private calcularFinTimestamp(horaInicio: string, horaFin: string): number {
+    const [hI, mI] = horaInicio.split(':').map(Number);
+    const [hF, mF] = horaFin.split(':').map(Number);
+    const ahora = new Date();
+    const fin = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), hF, mF, 0, 0);
+    if (hF * 60 + mF <= hI * 60 + mI) {
+      fin.setDate(fin.getDate() + 1);
+    }
+    return fin.getTime();
   }
 
   incrementar(productoId: string, stockActual: number): void {
@@ -252,6 +317,13 @@ export class NuevaVentaComponent implements OnInit {
           metodoPago: respuesta.data.venta.metodoPago,
         });
         this.inventarioService.cargarProductos();
+
+        for (const l of this.lineasCarrito()) {
+          if (l.producto.cobraPorTiempo && l.horaInicio && l.horaFin) {
+            const finTimestamp = this.calcularFinTimestamp(l.horaInicio, l.horaFin);
+            this.billarTimerService.agregar(l.producto.nombre, l.horaInicio, l.horaFin, finTimestamp);
+          }
+        }
       },
       error: (err: HttpErrorResponse) => {
         this.registrando.set(false);
