@@ -1,0 +1,40 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  header="Asignar entradas"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <div class="campo">
+      <label for="tipoEntradaId">Tipo de entrada</label>
+      <select id="tipoEntradaId" formControlName="tipoEntradaId" class="select">
+        <option value="">Selecciona un tipo…</option>
+        @for (t of tiposEntrada(); track t.id) {
+          <option [value]="t.id">{{ t.nombre }} ({{ t.precio | number: '1.2-2' }})</option>
+        }
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="nombreReferencia">Referencia (vendedor/mesa)</label>
+      <input id="nombreReferencia" type="text" formControlName="nombreReferencia" placeholder="Ej. Juan Pérez" class="input-plain" />
+    </div>
+
+    <div class="campo">
+      <label for="cantidadAsignada">Cantidad asignada</label>
+      <input id="cantidadAsignada" type="number" min="1" formControlName="cantidadAsignada" placeholder="Ej. 20" class="input-plain" />
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Asignar" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
+    </div>
+  </form>
+</p-dialog>

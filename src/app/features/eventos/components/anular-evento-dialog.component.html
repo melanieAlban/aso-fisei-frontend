@@ -1,0 +1,25 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '410px' }"
+  header="Anular evento"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <p class="subtitulo">{{ nombreEvento() }}</p>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <label for="motivo">Motivo de anulación <span class="obligatorio">(obligatorio)</span></label>
+    <input id="motivo" type="text" pInputText formControlName="motivo" placeholder="Ej. se canceló el evento" class="w-full" />
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Anular evento" [loading]="cargando()" type="submit" />
+    </div>
+  </form>
+</p-dialog>

@@ -1,0 +1,178 @@
+:host {
+  display: block;
+  padding: 24px;
+  color: #0a1638;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: #5b6478;
+  }
+}
+
+.buscador {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #e1e4ea;
+  border-radius: 11px;
+  padding: 10px 14px;
+  width: 240px;
+
+  i {
+    color: #9aa2b1;
+    font-size: 14px;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    font: 500 13.5px 'Plus Jakarta Sans', sans-serif;
+    color: #0a1638;
+    background: none;
+    width: 100%;
+  }
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .tarjeta {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 15px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .etiqueta {
+    font-size: 12.5px;
+    color: #5b6478;
+    font-weight: 600;
+  }
+
+  .valor {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .valor-alerta {
+    color: #c0392b;
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.acciones-toolbar {
+  margin-left: auto;
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.celda-desc {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.celda-monto {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.celda-fecha {
+  font-size: 12.5px;
+  color: #9aa2b1;
+  font-weight: 600;
+}
+
+.motivo-anulacion {
+  font-size: 11px;
+  color: #c0392b;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.btn-detalle {
+  font: 700 12.5px 'Plus Jakarta Sans', sans-serif;
+  color: #0e9e70;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.acciones-celda {
+  display: flex;
+  justify-content: flex-end;
+}
+
+tr.anulado {
+  opacity: 0.62;
+}
+
+.vacio {
+  text-align: center;
+  padding: 44px 20px;
+  color: #9aa2b1;
+  font-size: 14px;
+}
+
+:host ::ng-deep {
+  .eventos-table .p-datatable-thead > tr > th {
+    background: #fff;
+    color: #9aa2b1;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .p-tag {
+    border-radius: 999px;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 640px) {
+  .buscador {
+    display: none;
+  }
+
+  .resumen {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,210 @@
+:host {
+  display: block;
+  padding: 24px;
+  color: #0a1638;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 700 12.5px 'Plus Jakarta Sans', sans-serif;
+  color: #5b6478;
+  text-decoration: none;
+  margin-bottom: 16px;
+
+  &:hover {
+    color: #0a1638;
+  }
+}
+
+.cargando {
+  padding: 60px 24px;
+  color: #9aa2b1;
+  font-size: 14px;
+  text-align: center;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 6px;
+
+  .titulo-bloque {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+}
+
+.motivo-anulacion {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #c0392b;
+  margin: 4px 0 0;
+}
+
+.acciones-header {
+  margin-left: auto;
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.fechas {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 10px 0 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #9aa2b1;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+
+  .tarjeta {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 15px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.destacada {
+      background: #0a1638;
+
+      .etiqueta {
+        color: #9aa9c9;
+      }
+
+      .valor {
+        color: #12d897;
+      }
+    }
+  }
+
+  .etiqueta {
+    font-size: 11.5px;
+    color: #5b6478;
+    font-weight: 600;
+  }
+
+  .valor {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .valor-alerta {
+    color: #c0392b;
+  }
+}
+
+.bloque {
+  background: #fff;
+  border: 1px solid #eaecef;
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.bloque-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  h2 {
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0;
+  }
+}
+
+.celda-desc {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.celda-monto {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.celda-fecha {
+  font-size: 12px;
+  color: #9aa2b1;
+  font-weight: 600;
+}
+
+.acciones-celda {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-detalle {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #e1e4ea;
+  background: #fff;
+  color: #0a1638;
+  border-radius: 8px;
+  cursor: pointer;
+  font: 700 11.5px 'Plus Jakarta Sans', sans-serif;
+
+  &:hover {
+    border-color: #12d897;
+  }
+}
+
+.vacio {
+  text-align: center;
+  padding: 30px 20px;
+  color: #9aa2b1;
+  font-size: 13.5px;
+}
+
+:host ::ng-deep {
+  .tabla .p-datatable-thead > tr > th {
+    background: #fff;
+    color: #9aa2b1;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .p-tag {
+    border-radius: 999px;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 1100px) {
+  .resumen {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .resumen {
+    grid-template-columns: 1fr 1fr;
+  }
+}

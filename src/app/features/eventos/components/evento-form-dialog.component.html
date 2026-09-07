@@ -1,0 +1,44 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '440px' }"
+  [header]="modoEdicion() ? 'Editar evento' : 'Nuevo evento'"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <div class="campo">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" type="text" formControlName="nombre" placeholder="Ej. Bingo de fin de año" class="input-plain" />
+    </div>
+
+    <div class="campo">
+      <label for="presupuesto">Presupuesto (opcional)</label>
+      <div class="campo-monto">
+        <span>$</span>
+        <input id="presupuesto" type="text" inputmode="decimal" formControlName="presupuesto" placeholder="0.00" />
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="campo">
+        <label for="fechaInicio">Fecha inicio</label>
+        <input id="fechaInicio" type="date" formControlName="fechaInicio" class="input-plain" />
+      </div>
+      <div class="campo">
+        <label for="fechaFin">Fecha fin (opcional)</label>
+        <input id="fechaFin" type="date" formControlName="fechaFin" class="input-plain" />
+      </div>
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button [label]="modoEdicion() ? 'Guardar cambios' : 'Crear evento'" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
+    </div>
+  </form>
+</p-dialog>

@@ -1,0 +1,39 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  header="Nuevo tipo de entrada"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <div class="campo">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" type="text" formControlName="nombre" placeholder="Ej. General, VIP" class="input-plain" />
+    </div>
+
+    <div class="grid2">
+      <div class="campo">
+        <label for="precio">Precio</label>
+        <div class="campo-monto">
+          <span>$</span>
+          <input id="precio" type="text" inputmode="decimal" formControlName="precio" placeholder="0.00" />
+        </div>
+      </div>
+      <div class="campo">
+        <label for="cantidadTotal">Cantidad total</label>
+        <input id="cantidadTotal" type="number" min="1" formControlName="cantidadTotal" placeholder="Ej. 100" class="input-plain" />
+      </div>
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Crear" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
+    </div>
+  </form>
+</p-dialog>

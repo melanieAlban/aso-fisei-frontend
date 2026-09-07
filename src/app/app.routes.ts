@@ -57,6 +57,11 @@ export const routes: Routes = [
         canActivate: [permisoGuard(['Admin'])],
       },
       {
+        path: 'eventos',
+        loadChildren: () => import('./features/eventos/eventos.routes').then((m) => m.EVENTOS_ROUTES),
+        canActivate: [permisoGuard(['Admin'])],
+      },
+      {
         path: 'auditoria',
         loadChildren: () =>
           import('./features/auditoria/auditoria.routes').then((m) => m.AUDITORIA_ROUTES),

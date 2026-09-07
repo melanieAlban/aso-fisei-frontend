@@ -1,0 +1,46 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '460px' }"
+  header="Cerrar evento"
+  [draggable]="false"
+  [dismissableMask]="!cargando()"
+  [closable]="!!resultado() || !cargando()"
+>
+  @if (!resultado()) {
+    <p class="subtitulo">
+      Vas a cerrar <strong>{{ nombreEvento() }}</strong>. La utilidad del evento (efectivo y transferencia)
+      se transferirá al Fondo General y ya no se podrán registrar más movimientos en este evento.
+    </p>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Confirmar cierre" [loading]="cargando()" (onClick)="confirmar()" />
+    </div>
+  } @else {
+    <div class="resultado-grid">
+      <div class="resultado-card">
+        <div class="resultado-titulo">Efectivo</div>
+        <div class="resultado-linea"><span>Ingresos</span><span>{{ resultado()!.resumen.ingresosEfectivo.toFixed(2) }}</span></div>
+        <div class="resultado-linea"><span>Gastos</span><span>{{ resultado()!.resumen.gastosEfectivo.toFixed(2) }}</span></div>
+        <div class="resultado-linea resultado-utilidad"><span>Utilidad</span><span>{{ resultado()!.resumen.utilidadEfectivo.toFixed(2) }}</span></div>
+      </div>
+      <div class="resultado-card">
+        <div class="resultado-titulo">Transferencia</div>
+        <div class="resultado-linea"><span>Ingresos</span><span>{{ resultado()!.resumen.ingresosTransferencia.toFixed(2) }}</span></div>
+        <div class="resultado-linea"><span>Gastos</span><span>{{ resultado()!.resumen.gastosTransferencia.toFixed(2) }}</span></div>
+        <div class="resultado-linea resultado-utilidad"><span>Utilidad</span><span>{{ resultado()!.resumen.utilidadTransferencia.toFixed(2) }}</span></div>
+      </div>
+    </div>
+    <p class="nota">La utilidad ya se acreditó al Fondo General.</p>
+
+    <div class="acciones">
+      <p-button label="Cerrar" (onClick)="cerrar()" styleClass="w-full" />
+    </div>
+  }
+</p-dialog>

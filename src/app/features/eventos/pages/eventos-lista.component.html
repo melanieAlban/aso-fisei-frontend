@@ -1,0 +1,80 @@
+<div class="eventos-page">
+  <header class="page-header">
+    <div>
+      <h1>Eventos</h1>
+      <p>Bingos, bailes y demás actividades con ingresos y gastos propios</p>
+    </div>
+    <div class="buscador">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        pInputText
+        placeholder="Buscar evento…"
+        [value]="query()"
+        (input)="onBuscar($any($event.target).value)"
+      />
+    </div>
+  </header>
+
+  <section class="resumen">
+    <div class="tarjeta">
+      <span class="etiqueta">Eventos activos</span>
+      <span class="valor">{{ cantidadActivos() }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Eventos cerrados</span>
+      <span class="valor">{{ cantidadCerrados() }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Eventos anulados</span>
+      <span class="valor valor-alerta">{{ cantidadAnulados() }}</span>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="acciones-toolbar">
+      <p-button label="Nuevo evento" icon="pi pi-plus" (onClick)="abrirCrear()" />
+    </div>
+  </div>
+
+  <p-table [value]="filas()" [loading]="cargando()" dataKey="id" class="eventos-table">
+    <ng-template #header>
+      <tr>
+        <th>Nombre</th>
+        <th>Presupuesto</th>
+        <th>Estado</th>
+        <th>Fecha inicio</th>
+        <th>Fecha fin</th>
+        <th></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-evento>
+      <tr [class.anulado]="evento.estado === 'ANULADO'">
+        <td class="celda-desc">{{ evento.nombre }}</td>
+        <td class="celda-monto">{{ evento.presupuesto !== null ? (evento.presupuesto | number: '1.2-2') : '—' }}</td>
+        <td>
+          <p-tag [value]="evento.estado" [style]="colorEstado(evento.estado)" />
+          @if (evento.motivoAnulacion) {
+            <div class="motivo-anulacion">Anulado: {{ evento.motivoAnulacion }}</div>
+          }
+        </td>
+        <td class="celda-fecha">{{ evento.fechaInicio | date: 'dd/MM/yyyy' }}</td>
+        <td class="celda-fecha">{{ evento.fechaFin ? (evento.fechaFin | date: 'dd/MM/yyyy') : '—' }}</td>
+        <td class="acciones-celda">
+          <a [routerLink]="[evento.id]" class="btn-detalle">Ver detalle</a>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6" class="vacio">No hay eventos que coincidan con el filtro.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-evento-form-dialog [(visible)]="dialogVisible" />
+
+  <p-toast />
+</div>

@@ -1,0 +1,197 @@
+<div class="evento-page">
+  <a routerLink="/eventos" class="volver"><i class="pi pi-arrow-left"></i> Volver a eventos</a>
+
+  @if (cargando() && !evento()) {
+    <div class="cargando">Cargando evento…</div>
+  } @else if (evento(); as e) {
+    <header class="page-header">
+      <div class="titulo-bloque">
+        <h1>{{ e.nombre }}</h1>
+        <p-tag [value]="e.estado" [style]="colorEstado(e.estado)" />
+      </div>
+      @if (e.motivoAnulacion) {
+        <p class="motivo-anulacion">Anulado: {{ e.motivoAnulacion }}</p>
+      }
+      <div class="acciones-header">
+        @if (esActivo()) {
+          <p-button label="Editar" severity="secondary" [outlined]="true" (onClick)="abrirEditar()" />
+          <p-button label="Anular" severity="danger" [outlined]="true" (onClick)="abrirAnular()" />
+          <p-button label="Cerrar evento" (onClick)="abrirCerrar()" />
+        }
+      </div>
+    </header>
+
+    <section class="fechas">
+      <span>Inicio: {{ e.fechaInicio | date: 'dd/MM/yyyy' }}</span>
+      @if (e.fechaFin) {
+        <span>Fin: {{ e.fechaFin | date: 'dd/MM/yyyy' }}</span>
+      }
+      @if (e.fechaCierre) {
+        <span>Cerrado: {{ e.fechaCierre | date: 'dd/MM/yyyy HH:mm' }}</span>
+      }
+    </section>
+
+    @if (resumen(); as r) {
+      <section class="resumen">
+        <div class="tarjeta">
+          <span class="etiqueta">Presupuesto</span>
+          <span class="valor">{{ e.presupuesto !== null ? (e.presupuesto | number: '1.2-2') : '—' }}</span>
+        </div>
+        <div class="tarjeta">
+          <span class="etiqueta">Ingresos manuales</span>
+          <span class="valor">{{ r.ingresosManuales | number: '1.2-2' }}</span>
+        </div>
+        <div class="tarjeta">
+          <span class="etiqueta">Ingresos por entradas</span>
+          <span class="valor">{{ r.ingresosEntradas | number: '1.2-2' }}</span>
+        </div>
+        <div class="tarjeta">
+          <span class="etiqueta">Total gastos</span>
+          <span class="valor valor-alerta">{{ r.totalGastos | number: '1.2-2' }}</span>
+        </div>
+        <div class="tarjeta destacada">
+          <span class="etiqueta">Utilidad</span>
+          <span class="valor">{{ r.utilidad | number: '1.2-2' }}</span>
+        </div>
+      </section>
+    }
+
+    <section class="bloque">
+      <div class="bloque-header">
+        <h2>Tipos de entrada</h2>
+        @if (esActivo()) {
+          <p-button label="Nuevo tipo" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="abrirNuevoTipoEntrada()" />
+        }
+      </div>
+      <p-table [value]="tiposEntrada()" dataKey="id" class="tabla">
+        <ng-template #header>
+          <tr>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Cantidad total</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-tipo>
+          <tr>
+            <td>{{ tipo.nombre }}</td>
+            <td>{{ tipo.precio | number: '1.2-2' }}</td>
+            <td>{{ tipo.cantidadTotal }}</td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr><td colspan="3" class="vacio">Todavía no hay tipos de entrada.</td></tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <section class="bloque">
+      <div class="bloque-header">
+        <h2>Asignaciones de entradas</h2>
+        @if (esActivo() && tiposEntrada().length > 0) {
+          <p-button label="Asignar entradas" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="abrirNuevaAsignacion()" />
+        }
+      </div>
+      <p-table [value]="asignaciones()" dataKey="id" class="tabla">
+        <ng-template #header>
+          <tr>
+            <th>Referencia</th>
+            <th>Tipo</th>
+            <th>Asignadas</th>
+            <th>Vendidas</th>
+            <th>Devueltas</th>
+            <th>Dinero recibido</th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-a>
+          <tr>
+            <td class="celda-desc">{{ a.nombreReferencia }}</td>
+            <td>{{ nombreTipoEntrada(a.tipoEntradaId) }}</td>
+            <td>{{ a.cantidadAsignada }}</td>
+            <td>{{ a.cantidadVendida }}</td>
+            <td>{{ a.cantidadDevuelta }}</td>
+            <td class="celda-monto">{{ a.dineroRecibido | number: '1.2-2' }}</td>
+            <td class="acciones-celda">
+              @if (esActivo()) {
+                <button type="button" class="btn-detalle" (click)="abrirActualizarAsignacion(a)">Actualizar</button>
+              }
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr><td colspan="7" class="vacio">Todavía no hay asignaciones de entradas.</td></tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <section class="bloque">
+      <div class="bloque-header">
+        <h2>Ingresos manuales</h2>
+        @if (esActivo()) {
+          <p-button label="Registrar ingreso" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="abrirIngreso()" />
+        }
+      </div>
+      <p-table [value]="ingresos()" dataKey="id" class="tabla">
+        <ng-template #header>
+          <tr>
+            <th>Descripción</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Fecha</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-i>
+          <tr>
+            <td class="celda-desc">{{ i.descripcion }}</td>
+            <td class="celda-monto">{{ i.monto | number: '1.2-2' }}</td>
+            <td>{{ i.metodoPago === 'EFECTIVO' ? 'Efectivo' : 'Transferencia' }}</td>
+            <td class="celda-fecha">{{ i.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr><td colspan="4" class="vacio">Todavía no hay ingresos manuales.</td></tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <section class="bloque">
+      <div class="bloque-header">
+        <h2>Gastos manuales</h2>
+        @if (esActivo()) {
+          <p-button label="Registrar gasto" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="abrirGasto()" />
+        }
+      </div>
+      <p-table [value]="gastos()" dataKey="id" class="tabla">
+        <ng-template #header>
+          <tr>
+            <th>Descripción</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Fecha</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-g>
+          <tr>
+            <td class="celda-desc">{{ g.descripcion }}</td>
+            <td class="celda-monto">{{ g.monto | number: '1.2-2' }}</td>
+            <td>{{ g.metodoPago === 'EFECTIVO' ? 'Efectivo' : 'Transferencia' }}</td>
+            <td class="celda-fecha">{{ g.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr><td colspan="4" class="vacio">Todavía no hay gastos manuales.</td></tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <app-evento-form-dialog [(visible)]="editarVisible" [evento]="e" />
+    <app-anular-evento-dialog [(visible)]="anularVisible" [eventoId]="e.id" [nombreEvento]="e.nombre" />
+    <app-cerrar-evento-dialog [(visible)]="cerrarVisible" [eventoId]="e.id" [nombreEvento]="e.nombre" />
+    <app-tipo-entrada-form-dialog [(visible)]="tipoEntradaVisible" [eventoId]="e.id" />
+    <app-asignacion-form-dialog [(visible)]="asignacionVisible" [eventoId]="e.id" [tiposEntrada]="tiposEntrada()" />
+    <app-actualizar-asignacion-dialog [(visible)]="actualizarAsignacionVisible" [asignacion]="asignacionSeleccionada()" />
+    <app-movimiento-evento-dialog [(visible)]="movimientoVisible" [eventoId]="e.id" [tipo]="movimientoTipo()" />
+  }
+
+  <p-toast />
+</div>
