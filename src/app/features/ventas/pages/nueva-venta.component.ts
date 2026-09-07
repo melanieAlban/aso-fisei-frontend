@@ -12,6 +12,7 @@ import { MetodoPago } from '../models/venta.model';
 import { VentasService } from '../services/ventas.service';
 import { CajaService } from '../../caja/services/caja.service';
 import { BillarTimerService } from '../services/billar-timer.service';
+import { aCentavosDinero, redondearDinero } from '../../../shared/utils/dinero.util';
 
 type ModoPago = 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
 
@@ -90,7 +91,7 @@ export class NuevaVentaComponent implements OnInit {
         duracionMinutos: item.duracionMinutos,
         horaInicio: item.horaInicio,
         horaFin: item.horaFin,
-        lineTotal: this.redondearDosDecimales(precioUnitario * item.cantidad),
+        lineTotal: redondearDinero(precioUnitario * item.cantidad),
       });
     }
     return lineas;
@@ -99,17 +100,11 @@ export class NuevaVentaComponent implements OnInit {
   // Cálculo solo para mostrar en vivo en el carrito — el precio real y definitivo
   // lo calcula el backend al confirmar la venta.
   calcularPrecioPorTiempo(tarifaPorHora: number, minutos: number): number {
-    return this.redondearDosDecimales(tarifaPorHora * (minutos / 60));
-  }
-
-  // Evita errores de precisión de punto flotante de JS (ej. 0.1 + 0.2 !== 0.3)
-  // al sumar montos.
-  private redondearDosDecimales(valor: number): number {
-    return Math.round((valor + Number.EPSILON) * 100) / 100;
+    return redondearDinero(tarifaPorHora * (minutos / 60));
   }
 
   readonly totalCarrito = computed(() =>
-    this.redondearDosDecimales(this.lineasCarrito().reduce((acc, l) => acc + l.lineTotal, 0)),
+    redondearDinero(this.lineasCarrito().reduce((acc, l) => acc + l.lineTotal, 0)),
   );
   readonly cantidadItems = computed(() =>
     Object.values(this.carrito()).reduce((acc, i) => acc + i.cantidad, 0),
@@ -117,7 +112,7 @@ export class NuevaVentaComponent implements OnInit {
 
   readonly cambio = computed(() => {
     const recibido = parseFloat(this.montoRecibido()) || 0;
-    return (this.aCentavos(recibido) - this.aCentavos(this.totalCarrito())) / 100;
+    return (aCentavosDinero(recibido) - aCentavosDinero(this.totalCarrito())) / 100;
   });
 
   ngOnInit(): void {
@@ -268,13 +263,6 @@ export class NuevaVentaComponent implements OnInit {
     this.montoRecibido.set('');
   }
 
-  // Evita errores de precisión de punto flotante de JS (ej. 0.1 + 0.2 !== 0.3)
-  // al comparar montos — sin esto, "monto recibido === total exacto" a veces
-  // se bloqueaba como si faltara dinero.
-  private aCentavos(valor: number): number {
-    return Math.round(valor * 100);
-  }
-
   // Montos que realmente se registrarán, según el modo de pago elegido.
   private montosPago(): { montoEfectivo: number; montoTransferencia: number } {
     const total = this.totalCarrito();
@@ -301,13 +289,13 @@ export class NuevaVentaComponent implements OnInit {
     if (this.modoPago() === 'MIXTO') {
       const { montoEfectivo, montoTransferencia } = this.montosPago();
       const sumaNoCoincide =
-        this.aCentavos(montoEfectivo) + this.aCentavos(montoTransferencia) !== this.aCentavos(total);
+        aCentavosDinero(montoEfectivo) + aCentavosDinero(montoTransferencia) !== aCentavosDinero(total);
       return !hasItems || duracionInvalida || sumaNoCoincide || this.registrando();
     }
 
     const esEfectivo = this.modoPago() === 'EFECTIVO';
     const recibido = parseFloat(this.montoRecibido()) || 0;
-    const montoInsuficiente = esEfectivo && recibido > 0 && this.aCentavos(recibido) < this.aCentavos(total);
+    const montoInsuficiente = esEfectivo && recibido > 0 && aCentavosDinero(recibido) < aCentavosDinero(total);
     return !hasItems || duracionInvalida || montoInsuficiente || this.registrando();
   }
 

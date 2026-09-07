@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { DeudaConAbonos, MetodoPago } from '../models/deuda.model';
 import { DeudasService } from '../services/deudas.service';
+import { redondearDinero } from '../../../shared/utils/dinero.util';
 
 @Component({
   selector: 'app-abono-dialog',
@@ -33,7 +34,7 @@ export class AbonoDialogComponent {
   readonly esCobrar = computed(() => this.deuda()?.deuda.tipo === 'POR_COBRAR');
   readonly saldoPendiente = computed(() => {
     const d = this.deuda();
-    return d ? d.deuda.montoTotal - d.deuda.montoAbonado : 0;
+    return d ? redondearDinero(d.deuda.montoTotal - d.deuda.montoAbonado) : 0;
   });
   readonly tituloAccion = computed(() => (this.esCobrar() ? 'Registrar abono' : 'Registrar pago'));
 
@@ -57,7 +58,7 @@ export class AbonoDialogComponent {
   }
 
   aplicarMitad(): void {
-    this.form.controls.monto.setValue((this.saldoPendiente() / 2).toFixed(2));
+    this.form.controls.monto.setValue(redondearDinero(this.saldoPendiente() / 2).toFixed(2));
   }
 
   aplicarTotal(): void {

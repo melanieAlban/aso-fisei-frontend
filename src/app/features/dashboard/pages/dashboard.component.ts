@@ -4,6 +4,7 @@ import { DecimalPipe } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { AuthService } from '../../../core/auth/auth.service';
 import { DashboardService } from '../services/dashboard.service';
+import { redondearDinero } from '../../../shared/utils/dinero.util';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,7 +32,7 @@ export class DashboardComponent implements OnInit {
 
   readonly saldoFondoTotal = computed(() => {
     const fondo = this.dashboard()?.fondoGeneral;
-    return fondo ? fondo.saldoEfectivo + fondo.saldoTransferencia : 0;
+    return fondo ? redondearDinero(fondo.saldoEfectivo + fondo.saldoTransferencia) : 0;
   });
 
   readonly caja = computed(() => this.dashboard()?.cajaActual);

@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { FuentePago } from '../models/gasto.model';
 import { GastosService } from '../services/gastos.service';
+import { aCentavosDinero } from '../../../shared/utils/dinero.util';
 
 type ModoMoneda = 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
 
@@ -91,9 +92,6 @@ export class GastoFormDialogComponent {
     this.sugerenciasVisibles.set(false);
   }
 
-  private aCentavos(valor: number): number {
-    return Math.round(valor * 100);
-  }
 
   // Montos que realmente se enviarán, según el modo de moneda elegido.
   private montosFondo(): { montoEfectivoFondo: number; montoTransferenciaFondo: number } {
@@ -122,7 +120,7 @@ export class GastoFormDialogComponent {
     if (this.modoMoneda() === 'MIXTO') {
       const monto = Number(this.form.controls.monto.value) || 0;
       const { montoEfectivoFondo, montoTransferenciaFondo } = this.montosFondo();
-      return this.aCentavos(montoEfectivoFondo) + this.aCentavos(montoTransferenciaFondo) !== this.aCentavos(monto);
+      return aCentavosDinero(montoEfectivoFondo) + aCentavosDinero(montoTransferenciaFondo) !== aCentavosDinero(monto);
     }
     return false;
   }

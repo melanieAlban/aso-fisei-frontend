@@ -8,6 +8,7 @@ import { MessageService } from 'primeng/api';
 import { FuentePago } from '../models/movimiento-inventario.model';
 import { Producto } from '../models/producto.model';
 import { InventarioService } from '../services/inventario.service';
+import { aCentavosDinero, redondearDinero } from '../../../shared/utils/dinero.util';
 
 type ModoMoneda = 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
 
@@ -65,7 +66,7 @@ export class CompraDialogComponent {
   costoTotal(): number {
     const costoUnitario = Number(this.form.controls.costoUnitario.value) || 0;
     const cantidad = Number(this.form.controls.cantidad.value) || 0;
-    return Math.round(costoUnitario * cantidad * 100) / 100;
+    return redondearDinero(costoUnitario * cantidad);
   }
 
   requiereMoneda(): boolean {
@@ -93,10 +94,6 @@ export class CompraDialogComponent {
     this.modoMoneda.set('MIXTO');
   }
 
-  private aCentavos(valor: number): number {
-    return Math.round(valor * 100);
-  }
-
   // Montos que realmente se enviarán, según el modo de moneda elegido.
   private montosFondo(): { montoEfectivoFondo: number; montoTransferenciaFondo: number } {
     const total = this.costoTotal();
@@ -121,7 +118,7 @@ export class CompraDialogComponent {
     if (this.modoMoneda() === null) return true;
     if (this.modoMoneda() === 'MIXTO') {
       const { montoEfectivoFondo, montoTransferenciaFondo } = this.montosFondo();
-      return this.aCentavos(montoEfectivoFondo) + this.aCentavos(montoTransferenciaFondo) !== this.aCentavos(this.costoTotal());
+      return aCentavosDinero(montoEfectivoFondo) + aCentavosDinero(montoTransferenciaFondo) !== aCentavosDinero(this.costoTotal());
     }
     return false;
   }

@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { ArqueoCaja, Caja, ClasificacionDiferencia } from '../models/caja.model';
 import { CajaService } from '../services/caja.service';
+import { redondearDinero } from '../../../shared/utils/dinero.util';
 
 const NUM_PATTERN = /^\d+(\.\d{1,2})?$/;
 
@@ -59,7 +60,7 @@ export class ArqueoDialogComponent {
     const { efectivoContado, montoRetiradoEfectivo } = this.form.getRawValue();
     const ec = parseFloat(efectivoContado) || 0;
     const re = parseFloat(montoRetiradoEfectivo) || 0;
-    return Math.max(0, ec - re);
+    return Math.max(0, redondearDinero(ec - re));
   }
 
   retiroExcedeEfectivo(): boolean {
@@ -75,12 +76,12 @@ export class ArqueoDialogComponent {
 
   diferenciaEfectivo(): number {
     const r = this.resultado();
-    return r ? r.efectivoEsperado - r.efectivoContado : 0;
+    return r ? redondearDinero(r.efectivoEsperado - r.efectivoContado) : 0;
   }
 
   diferenciaTransferencia(): number {
     const r = this.resultado();
-    return r ? r.transferenciaEsperado - r.transferenciaContado : 0;
+    return r ? redondearDinero(r.transferenciaEsperado - r.transferenciaContado) : 0;
   }
 
   cerrar(): void {

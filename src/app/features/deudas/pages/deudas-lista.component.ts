@@ -10,6 +10,7 @@ import { DeudaConAbonos, TipoDeuda } from '../models/deuda.model';
 import { DeudasService } from '../services/deudas.service';
 import { DeudaFormDialogComponent } from '../components/deuda-form-dialog.component';
 import { AbonoDialogComponent } from '../components/abono-dialog.component';
+import { redondearDinero } from '../../../shared/utils/dinero.util';
 
 interface EstadoBadge {
   label: string;
@@ -61,16 +62,20 @@ export class DeudasListaComponent implements OnInit {
   });
 
   readonly totalGeneral = computed(() =>
-    this.deudas()
-      .filter((d) => d.deuda.tipo === this.tab())
-      .reduce((acc, d) => acc + d.deuda.montoTotal, 0),
+    redondearDinero(
+      this.deudas()
+        .filter((d) => d.deuda.tipo === this.tab())
+        .reduce((acc, d) => acc + d.deuda.montoTotal, 0),
+    ),
   );
   readonly totalAbonado = computed(() =>
-    this.deudas()
-      .filter((d) => d.deuda.tipo === this.tab())
-      .reduce((acc, d) => acc + d.deuda.montoAbonado, 0),
+    redondearDinero(
+      this.deudas()
+        .filter((d) => d.deuda.tipo === this.tab())
+        .reduce((acc, d) => acc + d.deuda.montoAbonado, 0),
+    ),
   );
-  readonly totalPendiente = computed(() => this.totalGeneral() - this.totalAbonado());
+  readonly totalPendiente = computed(() => redondearDinero(this.totalGeneral() - this.totalAbonado()));
 
   ngOnInit(): void {
     this.deudasService.cargarDeudas();
@@ -86,7 +91,7 @@ export class DeudasListaComponent implements OnInit {
   }
 
   saldoPendiente(d: DeudaConAbonos): number {
-    return d.deuda.montoTotal - d.deuda.montoAbonado;
+    return redondearDinero(d.deuda.montoTotal - d.deuda.montoAbonado);
   }
 
   progreso(d: DeudaConAbonos): number {
