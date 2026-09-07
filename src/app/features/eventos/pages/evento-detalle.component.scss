@@ -169,6 +169,7 @@
 .acciones-celda {
   display: flex;
   justify-content: flex-end;
+  gap: 7px;
 }
 
 .btn-detalle {
@@ -180,9 +181,26 @@
   border-radius: 8px;
   cursor: pointer;
   font: 700 11.5px 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
 
   &:hover {
     border-color: #12d897;
+  }
+}
+
+.btn-borrar {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #f0d4d4;
+  background: #fef5f5;
+  color: #c0392b;
+  border-radius: 8px;
+  cursor: pointer;
+  font: 700 11.5px 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+
+  &:hover {
+    background: #fde8e8;
   }
 }
 

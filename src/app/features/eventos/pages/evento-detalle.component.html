@@ -88,6 +88,7 @@
             <td class="acciones-celda">
               @if (esActivo()) {
                 <button type="button" class="btn-detalle" (click)="abrirEditarTipoEntrada(tipo)">Editar</button>
+                <button type="button" class="btn-borrar" (click)="borrarTipoEntrada(tipo)">Borrar</button>
               }
             </td>
           </tr>
@@ -142,6 +143,7 @@
               <td class="acciones-celda">
                 @if (esActivo()) {
                   <button type="button" class="btn-detalle" (click)="abrirActualizarAsignacion(a)">Actualizar</button>
+                  <button type="button" class="btn-borrar" (click)="borrarAsignacion(a)">Borrar</button>
                 }
               </td>
             </tr>
@@ -179,6 +181,7 @@
             <td class="acciones-celda">
               @if (esActivo()) {
                 <button type="button" class="btn-detalle" (click)="abrirEditarIngreso(i)">Editar</button>
+                <button type="button" class="btn-borrar" (click)="borrarIngreso(i)">Borrar</button>
               }
             </td>
           </tr>
@@ -215,6 +218,7 @@
             <td class="acciones-celda">
               @if (esActivo()) {
                 <button type="button" class="btn-detalle" (click)="abrirEditarGasto(g)">Editar</button>
+                <button type="button" class="btn-borrar" (click)="borrarGasto(g)">Borrar</button>
               }
             </td>
           </tr>

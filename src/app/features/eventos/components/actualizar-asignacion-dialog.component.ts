@@ -5,7 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { AsignacionEntradas, MetodoPagoEvento, TipoEntrada } from '../models/evento.model';
+import { AsignacionEntradas, CARRERAS_FISEI, MetodoPagoEvento, TipoEntrada } from '../models/evento.model';
 import { EventosService } from '../services/eventos.service';
 import { redondearDinero } from '../../../shared/utils/dinero.util';
 
@@ -24,6 +24,7 @@ export class ActualizarAsignacionDialogComponent {
   readonly visible = model(false);
   readonly asignacion = input<AsignacionEntradas | null>(null);
   readonly tipoEntrada = input<TipoEntrada | null>(null);
+  readonly carreras = CARRERAS_FISEI;
 
   readonly cargando = signal(false);
   readonly errorMensaje = signal('');

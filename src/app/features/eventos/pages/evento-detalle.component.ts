@@ -1,6 +1,7 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
@@ -47,6 +48,7 @@ export class EventoDetalleComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private eventosService = inject(EventosService);
   private destroyRef = inject(DestroyRef);
+  private messageService = inject(MessageService);
 
   readonly eventoId = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -157,6 +159,64 @@ export class EventoDetalleComponent implements OnInit {
     this.movimientoTipo.set('gasto');
     this.movimientoSeleccionado.set(gasto);
     this.movimientoVisible.set(true);
+  }
+
+  private mensajeError(err: HttpErrorResponse, fallback: string): string {
+    return err.error?.error?.message ?? fallback;
+  }
+
+  borrarTipoEntrada(tipo: TipoEntrada): void {
+    if (!confirm(`¿Borrar el tipo de entrada "${tipo.nombre}"?`)) return;
+    this.eventosService.eliminarTipoEntrada(this.eventoId, tipo.id).subscribe({
+      next: () => this.messageService.add({ severity: 'success', summary: 'Tipo de entrada borrado' }),
+      error: (err: HttpErrorResponse) =>
+        this.messageService.add({
+          severity: 'error',
+          summary: this.mensajeError(err, 'No se pudo borrar el tipo de entrada.'),
+        }),
+    });
+  }
+
+  borrarAsignacion(asignacion: AsignacionEntradas): void {
+    if (!confirm(`¿Borrar la asignación de "${asignacion.nombreReferencia}"?`)) return;
+    this.eventosService.eliminarAsignacion(asignacion.id).subscribe({
+      next: () => this.messageService.add({ severity: 'success', summary: 'Asignación borrada' }),
+      error: (err: HttpErrorResponse) =>
+        this.messageService.add({
+          severity: 'error',
+          summary: this.mensajeError(err, 'No se pudo borrar la asignación.'),
+        }),
+    });
+  }
+
+  borrarIngreso(ingreso: IngresoEvento): void {
+    if (!confirm(`¿Borrar el ingreso "${ingreso.descripcion}"?`)) return;
+    this.eventosService.eliminarIngreso(this.eventoId, ingreso.id).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Ingreso borrado' });
+        this.eventosService.cargarResumen(this.eventoId);
+      },
+      error: (err: HttpErrorResponse) =>
+        this.messageService.add({
+          severity: 'error',
+          summary: this.mensajeError(err, 'No se pudo borrar el ingreso.'),
+        }),
+    });
+  }
+
+  borrarGasto(gasto: GastoEvento): void {
+    if (!confirm(`¿Borrar el gasto "${gasto.descripcion}"?`)) return;
+    this.eventosService.eliminarGasto(this.eventoId, gasto.id).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Gasto borrado' });
+        this.eventosService.cargarResumen(this.eventoId);
+      },
+      error: (err: HttpErrorResponse) =>
+        this.messageService.add({
+          severity: 'error',
+          summary: this.mensajeError(err, 'No se pudo borrar el gasto.'),
+        }),
+    });
   }
 
   descargarAsignacionesExcel(): void {

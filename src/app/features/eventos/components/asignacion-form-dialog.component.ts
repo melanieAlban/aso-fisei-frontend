@@ -5,7 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { TipoEntrada } from '../models/evento.model';
+import { CARRERAS_FISEI, TipoEntrada } from '../models/evento.model';
 import { EventosService } from '../services/eventos.service';
 
 @Component({
@@ -23,6 +23,7 @@ export class AsignacionFormDialogComponent {
   readonly visible = model(false);
   readonly eventoId = input<string>('');
   readonly tiposEntrada = input<TipoEntrada[]>([]);
+  readonly carreras = CARRERAS_FISEI;
 
   readonly cargando = signal(false);
   readonly errorMensaje = signal('');

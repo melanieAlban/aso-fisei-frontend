@@ -1,6 +1,8 @@
 export type EstadoEvento = 'ACTIVO' | 'CERRADO' | 'ANULADO';
 export type MetodoPagoEvento = 'EFECTIVO' | 'TRANSFERENCIA';
 
+export const CARRERAS_FISEI = ['TI', 'Software', 'Industrial', 'Robótica', 'Telecomunicaciones'] as const;
+
 export interface Evento {
   id: string;
   nombre: string;

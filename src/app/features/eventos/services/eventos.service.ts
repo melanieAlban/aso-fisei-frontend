@@ -154,6 +154,12 @@ export class EventosService {
       );
   }
 
+  eliminarTipoEntrada(eventoId: string, tipoId: string): Observable<RespuestaEstandar<null>> {
+    return this.api.delete<RespuestaEstandar<null>>(`/events/${eventoId}/ticket-types/${tipoId}`).pipe(
+      tap(() => this._tiposEntrada.update((tipos) => tipos.filter((t) => t.id !== tipoId))),
+    );
+  }
+
   cargarAsignaciones(id: string): void {
     this.api.get<RespuestaEstandar<AsignacionEntradas[]>>(`/events/${id}/ticket-assignments`).subscribe({
       next: (respuesta) => this._asignaciones.set(respuesta.data),
@@ -200,6 +206,12 @@ export class EventosService {
     );
   }
 
+  eliminarAsignacion(id: string): Observable<RespuestaEstandar<null>> {
+    return this.api.delete<RespuestaEstandar<null>>(`/ticket-assignments/${id}`).pipe(
+      tap(() => this._asignaciones.update((lista) => lista.filter((a) => a.id !== id))),
+    );
+  }
+
   cargarIngresos(id: string): void {
     this.api.get<RespuestaEstandar<IngresoEvento[]>>(`/events/${id}/income`).subscribe({
       next: (respuesta) => this._ingresos.set(respuesta.data),
@@ -237,6 +249,12 @@ export class EventosService {
       );
   }
 
+  eliminarIngreso(eventoId: string, incomeId: string): Observable<RespuestaEstandar<null>> {
+    return this.api.delete<RespuestaEstandar<null>>(`/events/${eventoId}/income/${incomeId}`).pipe(
+      tap(() => this._ingresos.update((lista) => lista.filter((i) => i.id !== incomeId))),
+    );
+  }
+
   registrarGasto(
     eventoId: string,
     datos: { descripcion: string; monto: number; metodoPago: MetodoPagoEvento },
@@ -260,6 +278,12 @@ export class EventosService {
           ),
         ),
       );
+  }
+
+  eliminarGasto(eventoId: string, expenseId: string): Observable<RespuestaEstandar<null>> {
+    return this.api.delete<RespuestaEstandar<null>>(`/events/${eventoId}/expenses/${expenseId}`).pipe(
+      tap(() => this._gastos.update((lista) => lista.filter((g) => g.id !== expenseId))),
+    );
   }
 
   limpiarActual(): void {
