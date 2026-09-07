@@ -2,8 +2,8 @@
   [visible]="visible()"
   (visibleChange)="visible.set($event)"
   [modal]="true"
-  [style]="{ width: '400px' }"
-  header="Nuevo tipo de entrada"
+  [style]="{ width: '420px' }"
+  [header]="modoEdicion() ? 'Editar tipo de entrada' : 'Nuevo tipo de entrada'"
   [draggable]="false"
   [dismissableMask]="true"
 >
@@ -15,7 +15,7 @@
 
     <div class="grid2">
       <div class="campo">
-        <label for="precio">Precio</label>
+        <label for="precio">Precio individual</label>
         <div class="campo-monto">
           <span>$</span>
           <input id="precio" type="text" inputmode="decimal" formControlName="precio" placeholder="0.00" />
@@ -27,13 +27,34 @@
       </div>
     </div>
 
+    <label class="check-combo">
+      <input type="checkbox" [checked]="conCombo()" (change)="toggleCombo()" />
+      <span>Tiene precio especial por combo (ej. 3 por $10.50)</span>
+    </label>
+
+    @if (conCombo()) {
+      <div class="grid2">
+        <div class="campo">
+          <label for="precioCombo">Precio del combo</label>
+          <div class="campo-monto">
+            <span>$</span>
+            <input id="precioCombo" type="text" inputmode="decimal" formControlName="precioCombo" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="campo">
+          <label for="cantidadCombo">Entradas por combo</label>
+          <input id="cantidadCombo" type="number" min="2" formControlName="cantidadCombo" placeholder="Ej. 3" class="input-plain" />
+        </div>
+      </div>
+    }
+
     @if (errorMensaje()) {
       <p class="error">{{ errorMensaje() }}</p>
     }
 
     <div class="acciones">
       <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
-      <p-button label="Crear" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
+      <p-button [label]="modoEdicion() ? 'Guardar cambios' : 'Crear'" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
     </div>
   </form>
 </p-dialog>

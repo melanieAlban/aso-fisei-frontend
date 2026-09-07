@@ -68,18 +68,32 @@
           <tr>
             <th>Nombre</th>
             <th>Precio</th>
+            <th>Combo</th>
             <th>Cantidad total</th>
+            <th></th>
           </tr>
         </ng-template>
         <ng-template #body let-tipo>
           <tr>
             <td>{{ tipo.nombre }}</td>
             <td>{{ tipo.precio | number: '1.2-2' }}</td>
+            <td>
+              @if (tipo.precioCombo && tipo.cantidadCombo) {
+                {{ tipo.cantidadCombo }} x {{ tipo.precioCombo | number: '1.2-2' }}
+              } @else {
+                —
+              }
+            </td>
             <td>{{ tipo.cantidadTotal }}</td>
+            <td class="acciones-celda">
+              @if (esActivo()) {
+                <button type="button" class="btn-detalle" (click)="abrirEditarTipoEntrada(tipo)">Editar</button>
+              }
+            </td>
           </tr>
         </ng-template>
         <ng-template #emptymessage>
-          <tr><td colspan="3" class="vacio">Todavía no hay tipos de entrada.</td></tr>
+          <tr><td colspan="5" class="vacio">Todavía no hay tipos de entrada.</td></tr>
         </ng-template>
       </p-table>
     </section>
@@ -87,41 +101,56 @@
     <section class="bloque">
       <div class="bloque-header">
         <h2>Asignaciones de entradas</h2>
-        @if (esActivo() && tiposEntrada().length > 0) {
-          <p-button label="Asignar entradas" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="abrirNuevaAsignacion()" />
-        }
+        <div class="bloque-acciones">
+          @if (asignaciones().length > 0) {
+            <p-button label="Descargar Excel" icon="pi pi-download" size="small" severity="secondary" [outlined]="true" (onClick)="descargarAsignacionesExcel()" />
+          }
+          @if (esActivo() && tiposEntrada().length > 0) {
+            <p-button label="Asignar entradas" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="abrirNuevaAsignacion()" />
+          }
+        </div>
       </div>
-      <p-table [value]="asignaciones()" dataKey="id" class="tabla">
-        <ng-template #header>
-          <tr>
-            <th>Referencia</th>
-            <th>Tipo</th>
-            <th>Asignadas</th>
-            <th>Vendidas</th>
-            <th>Devueltas</th>
-            <th>Dinero recibido</th>
-            <th></th>
-          </tr>
-        </ng-template>
-        <ng-template #body let-a>
-          <tr>
-            <td class="celda-desc">{{ a.nombreReferencia }}</td>
-            <td>{{ nombreTipoEntrada(a.tipoEntradaId) }}</td>
-            <td>{{ a.cantidadAsignada }}</td>
-            <td>{{ a.cantidadVendida }}</td>
-            <td>{{ a.cantidadDevuelta }}</td>
-            <td class="celda-monto">{{ a.dineroRecibido | number: '1.2-2' }}</td>
-            <td class="acciones-celda">
-              @if (esActivo()) {
-                <button type="button" class="btn-detalle" (click)="abrirActualizarAsignacion(a)">Actualizar</button>
-              }
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template #emptymessage>
-          <tr><td colspan="7" class="vacio">Todavía no hay asignaciones de entradas.</td></tr>
-        </ng-template>
-      </p-table>
+      <div class="tabla-scroll">
+        <p-table [value]="asignaciones()" dataKey="id" class="tabla">
+          <ng-template #header>
+            <tr>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Semestre</th>
+              <th>Carrera</th>
+              <th>Tipo</th>
+              <th>Asignadas</th>
+              <th>Vendidas ind.</th>
+              <th>Vendidas combo</th>
+              <th>Devueltas</th>
+              <th>Dinero recibido</th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-a>
+            <tr>
+              <td class="celda-desc">{{ a.nombreReferencia }}</td>
+              <td>{{ a.telefono || '—' }}</td>
+              <td>{{ a.semestre || '—' }}</td>
+              <td>{{ a.carrera || '—' }}</td>
+              <td>{{ nombreTipoEntrada(a.tipoEntradaId) }}</td>
+              <td>{{ a.cantidadAsignada }}</td>
+              <td>{{ a.cantidadVendida - a.cantidadVendidaCombo }}</td>
+              <td>{{ a.cantidadVendidaCombo }}</td>
+              <td>{{ a.cantidadDevuelta }}</td>
+              <td class="celda-monto">{{ a.dineroRecibido | number: '1.2-2' }}</td>
+              <td class="acciones-celda">
+                @if (esActivo()) {
+                  <button type="button" class="btn-detalle" (click)="abrirActualizarAsignacion(a)">Actualizar</button>
+                }
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr><td colspan="11" class="vacio">Todavía no hay asignaciones de entradas.</td></tr>
+          </ng-template>
+        </p-table>
+      </div>
     </section>
 
     <section class="bloque">
@@ -138,6 +167,7 @@
             <th>Monto</th>
             <th>Método</th>
             <th>Fecha</th>
+            <th></th>
           </tr>
         </ng-template>
         <ng-template #body let-i>
@@ -146,10 +176,15 @@
             <td class="celda-monto">{{ i.monto | number: '1.2-2' }}</td>
             <td>{{ i.metodoPago === 'EFECTIVO' ? 'Efectivo' : 'Transferencia' }}</td>
             <td class="celda-fecha">{{ i.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td class="acciones-celda">
+              @if (esActivo()) {
+                <button type="button" class="btn-detalle" (click)="abrirEditarIngreso(i)">Editar</button>
+              }
+            </td>
           </tr>
         </ng-template>
         <ng-template #emptymessage>
-          <tr><td colspan="4" class="vacio">Todavía no hay ingresos manuales.</td></tr>
+          <tr><td colspan="5" class="vacio">Todavía no hay ingresos manuales.</td></tr>
         </ng-template>
       </p-table>
     </section>
@@ -168,6 +203,7 @@
             <th>Monto</th>
             <th>Método</th>
             <th>Fecha</th>
+            <th></th>
           </tr>
         </ng-template>
         <ng-template #body let-g>
@@ -176,10 +212,15 @@
             <td class="celda-monto">{{ g.monto | number: '1.2-2' }}</td>
             <td>{{ g.metodoPago === 'EFECTIVO' ? 'Efectivo' : 'Transferencia' }}</td>
             <td class="celda-fecha">{{ g.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td class="acciones-celda">
+              @if (esActivo()) {
+                <button type="button" class="btn-detalle" (click)="abrirEditarGasto(g)">Editar</button>
+              }
+            </td>
           </tr>
         </ng-template>
         <ng-template #emptymessage>
-          <tr><td colspan="4" class="vacio">Todavía no hay gastos manuales.</td></tr>
+          <tr><td colspan="5" class="vacio">Todavía no hay gastos manuales.</td></tr>
         </ng-template>
       </p-table>
     </section>
@@ -187,10 +228,10 @@
     <app-evento-form-dialog [(visible)]="editarVisible" [evento]="e" />
     <app-anular-evento-dialog [(visible)]="anularVisible" [eventoId]="e.id" [nombreEvento]="e.nombre" />
     <app-cerrar-evento-dialog [(visible)]="cerrarVisible" [eventoId]="e.id" [nombreEvento]="e.nombre" />
-    <app-tipo-entrada-form-dialog [(visible)]="tipoEntradaVisible" [eventoId]="e.id" />
+    <app-tipo-entrada-form-dialog [(visible)]="tipoEntradaVisible" [eventoId]="e.id" [tipoEntrada]="tipoEntradaSeleccionado()" />
     <app-asignacion-form-dialog [(visible)]="asignacionVisible" [eventoId]="e.id" [tiposEntrada]="tiposEntrada()" />
-    <app-actualizar-asignacion-dialog [(visible)]="actualizarAsignacionVisible" [asignacion]="asignacionSeleccionada()" />
-    <app-movimiento-evento-dialog [(visible)]="movimientoVisible" [eventoId]="e.id" [tipo]="movimientoTipo()" />
+    <app-actualizar-asignacion-dialog [(visible)]="actualizarAsignacionVisible" [asignacion]="asignacionSeleccionada()" [tipoEntrada]="tipoEntradaDeAsignacion()" />
+    <app-movimiento-evento-dialog [(visible)]="movimientoVisible" [eventoId]="e.id" [tipo]="movimientoTipo()" [movimiento]="movimientoSeleccionado()" />
   }
 
   <p-toast />

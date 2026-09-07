@@ -1,16 +1,18 @@
 import { Component, effect, inject, input, model, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { AsignacionEntradas, MetodoPagoEvento } from '../models/evento.model';
+import { AsignacionEntradas, MetodoPagoEvento, TipoEntrada } from '../models/evento.model';
 import { EventosService } from '../services/eventos.service';
+import { redondearDinero } from '../../../shared/utils/dinero.util';
 
 @Component({
   selector: 'app-actualizar-asignacion-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, DialogModule, ButtonModule],
+  imports: [DecimalPipe, ReactiveFormsModule, DialogModule, ButtonModule],
   templateUrl: './actualizar-asignacion-dialog.component.html',
   styleUrl: './actualizar-asignacion-dialog.component.scss',
 })
@@ -21,13 +23,22 @@ export class ActualizarAsignacionDialogComponent {
 
   readonly visible = model(false);
   readonly asignacion = input<AsignacionEntradas | null>(null);
+  readonly tipoEntrada = input<TipoEntrada | null>(null);
 
   readonly cargando = signal(false);
   readonly errorMensaje = signal('');
   readonly metodoPago = signal<MetodoPagoEvento>('EFECTIVO');
 
+  readonly tieneCombo = () => !!(this.tipoEntrada()?.precioCombo && this.tipoEntrada()?.cantidadCombo);
+
   readonly form = this.fb.nonNullable.group({
-    cantidadVendida: ['0', [Validators.required, Validators.pattern(/^\d+$/)]],
+    nombreReferencia: ['', Validators.required],
+    telefono: [''],
+    semestre: [''],
+    carrera: [''],
+    cantidadAsignada: ['0', [Validators.required, Validators.pattern(/^[1-9]\d*$/)]],
+    cantidadVendidaIndividual: ['0', [Validators.required, Validators.pattern(/^\d+$/)]],
+    cantidadVendidaCombo: ['0', [Validators.pattern(/^\d+$/)]],
     cantidadDevuelta: ['0', [Validators.required, Validators.pattern(/^\d+$/)]],
     dineroRecibido: ['0', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
   });
@@ -40,12 +51,37 @@ export class ActualizarAsignacionDialogComponent {
       this.errorMensaje.set('');
       const a = this.asignacion();
       this.metodoPago.set(a?.metodoPago ?? 'EFECTIVO');
+      const vendidaCombo = a?.cantidadVendidaCombo ?? 0;
+      const vendidaIndividual = (a?.cantidadVendida ?? 0) - vendidaCombo;
       this.form.reset({
-        cantidadVendida: String(a?.cantidadVendida ?? 0),
+        nombreReferencia: a?.nombreReferencia ?? '',
+        telefono: a?.telefono ?? '',
+        semestre: a?.semestre ?? '',
+        carrera: a?.carrera ?? '',
+        cantidadAsignada: String(a?.cantidadAsignada ?? 0),
+        cantidadVendidaIndividual: String(vendidaIndividual),
+        cantidadVendidaCombo: String(vendidaCombo),
         cantidadDevuelta: String(a?.cantidadDevuelta ?? 0),
         dineroRecibido: a?.dineroRecibido ? String(a.dineroRecibido) : '0',
       });
     });
+  }
+
+  // Plain method (no computed()) — lee valores de reactive-forms, que no son
+  // signals, junto con el signal tipoEntrada().
+  dineroSugerido(): number {
+    const tipo = this.tipoEntrada();
+    if (!tipo) return 0;
+    const { cantidadVendidaIndividual, cantidadVendidaCombo } = this.form.getRawValue();
+    const individual = Number(cantidadVendidaIndividual) || 0;
+    const combo = Number(cantidadVendidaCombo) || 0;
+    const totalIndividual = individual * tipo.precio;
+    const totalCombo = tipo.precioCombo && tipo.cantidadCombo ? (combo / tipo.cantidadCombo) * tipo.precioCombo : 0;
+    return redondearDinero(totalIndividual + totalCombo);
+  }
+
+  usarSugerido(): void {
+    this.form.controls.dineroRecibido.setValue(this.dineroSugerido().toFixed(2));
   }
 
   elegirEfectivo(): void {
@@ -69,12 +105,30 @@ export class ActualizarAsignacionDialogComponent {
 
     this.cargando.set(true);
     this.errorMensaje.set('');
-    const { cantidadVendida, cantidadDevuelta, dineroRecibido } = this.form.getRawValue();
+    const {
+      nombreReferencia,
+      telefono,
+      semestre,
+      carrera,
+      cantidadAsignada,
+      cantidadVendidaIndividual,
+      cantidadVendidaCombo,
+      cantidadDevuelta,
+      dineroRecibido,
+    } = this.form.getRawValue();
     const dinero = Number(dineroRecibido);
+    const vendidaCombo = Number(cantidadVendidaCombo) || 0;
+    const cantidadVendida = (Number(cantidadVendidaIndividual) || 0) + vendidaCombo;
 
     this.eventosService
       .actualizarAsignacion(a.id, {
-        cantidadVendida: Number(cantidadVendida),
+        nombreReferencia,
+        telefono: telefono.trim() || null,
+        semestre: semestre.trim() || null,
+        carrera: carrera.trim() || null,
+        cantidadAsignada: Number(cantidadAsignada),
+        cantidadVendida,
+        cantidadVendidaCombo: vendidaCombo,
         cantidadDevuelta: Number(cantidadDevuelta),
         dineroRecibido: dinero,
         ...(dinero > 0 ? { metodoPago: this.metodoPago() } : {}),

@@ -2,24 +2,62 @@
   [visible]="visible()"
   (visibleChange)="visible.set($event)"
   [modal]="true"
-  [style]="{ width: '420px' }"
+  [style]="{ width: '460px' }"
   header="Actualizar asignación"
   [draggable]="false"
   [dismissableMask]="true"
 >
-  <p class="subtitulo">{{ asignacion()?.nombreReferencia }} · asignadas {{ asignacion()?.cantidadAsignada }}</p>
-
   <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <div class="campo">
+      <label for="nombreReferencia">Nombre de la persona</label>
+      <input id="nombreReferencia" type="text" formControlName="nombreReferencia" class="input-plain" />
+    </div>
+
+    <div class="campo">
+      <label for="telefono">Teléfono</label>
+      <input id="telefono" type="text" formControlName="telefono" placeholder="Ej. 0991234567" class="input-plain" />
+    </div>
+
     <div class="grid2">
       <div class="campo">
-        <label for="cantidadVendida">Vendidas</label>
-        <input id="cantidadVendida" type="number" min="0" formControlName="cantidadVendida" class="input-plain" />
+        <label for="semestre">Semestre</label>
+        <input id="semestre" type="text" formControlName="semestre" placeholder="Ej. 5to" class="input-plain" />
       </div>
+      <div class="campo">
+        <label for="carrera">Carrera</label>
+        <input id="carrera" type="text" formControlName="carrera" placeholder="Ej. Software" class="input-plain" />
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="cantidadAsignada">Cantidad asignada</label>
+      <input id="cantidadAsignada" type="number" min="1" formControlName="cantidadAsignada" class="input-plain" />
+    </div>
+
+    <div class="grid2">
+      <div class="campo">
+        <label for="cantidadVendidaIndividual">Vendidas individual</label>
+        <input id="cantidadVendidaIndividual" type="number" min="0" formControlName="cantidadVendidaIndividual" class="input-plain" />
+      </div>
+      @if (tieneCombo()) {
+        <div class="campo">
+          <label for="cantidadVendidaCombo">Vendidas en combo</label>
+          <input id="cantidadVendidaCombo" type="number" min="0" formControlName="cantidadVendidaCombo" class="input-plain" />
+        </div>
+      } @else {
+        <div class="campo">
+          <label for="cantidadDevuelta">Devueltas</label>
+          <input id="cantidadDevuelta" type="number" min="0" formControlName="cantidadDevuelta" class="input-plain" />
+        </div>
+      }
+    </div>
+
+    @if (tieneCombo()) {
       <div class="campo">
         <label for="cantidadDevuelta">Devueltas</label>
         <input id="cantidadDevuelta" type="number" min="0" formControlName="cantidadDevuelta" class="input-plain" />
       </div>
-    </div>
+    }
 
     <div class="campo">
       <label for="dineroRecibido">Dinero recibido</label>
@@ -27,6 +65,12 @@
         <span>$</span>
         <input id="dineroRecibido" type="text" inputmode="decimal" formControlName="dineroRecibido" placeholder="0.00" />
       </div>
+      @if (tipoEntrada()) {
+        <div class="sugerencia">
+          Esperado según lo vendido: <strong>{{ dineroSugerido() | number: '1.2-2' }}</strong>
+          <button type="button" (click)="usarSugerido()">Usar este valor</button>
+        </div>
+      }
     </div>
 
     <div class="campo">

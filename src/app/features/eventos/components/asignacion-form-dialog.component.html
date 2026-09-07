@@ -28,6 +28,22 @@
       <input id="cantidadAsignada" type="number" min="1" formControlName="cantidadAsignada" placeholder="Ej. 20" class="input-plain" />
     </div>
 
+    <div class="campo">
+      <label for="telefono">Teléfono (opcional)</label>
+      <input id="telefono" type="text" formControlName="telefono" placeholder="Ej. 0991234567" class="input-plain" />
+    </div>
+
+    <div class="grid2">
+      <div class="campo">
+        <label for="semestre">Semestre (opcional)</label>
+        <input id="semestre" type="text" formControlName="semestre" placeholder="Ej. 5to" class="input-plain" />
+      </div>
+      <div class="campo">
+        <label for="carrera">Carrera (opcional)</label>
+        <input id="carrera" type="text" formControlName="carrera" placeholder="Ej. Software" class="input-plain" />
+      </div>
+    </div>
+
     @if (errorMensaje()) {
       <p class="error">{{ errorMensaje() }}</p>
     }

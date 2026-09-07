@@ -19,6 +19,10 @@ export interface TipoEntrada {
   nombre: string;
   precio: number;
   cantidadTotal: number;
+  // Precio especial por combo (ej. 3 entradas por $10.50). Ambos vienen
+  // juntos o ninguno de los dos.
+  precioCombo: number | null;
+  cantidadCombo: number | null;
 }
 
 export interface AsignacionEntradas {
@@ -26,8 +30,13 @@ export interface AsignacionEntradas {
   tipoEntradaId: string;
   usuarioRegistroId: string;
   nombreReferencia: string;
+  telefono: string | null;
+  semestre: string | null;
+  carrera: string | null;
   cantidadAsignada: number;
   cantidadVendida: number;
+  // Cuantas de las vendidas se vendieron al precio de combo.
+  cantidadVendidaCombo: number;
   cantidadDevuelta: number;
   dineroRecibido: number;
   metodoPago: MetodoPagoEvento | null;

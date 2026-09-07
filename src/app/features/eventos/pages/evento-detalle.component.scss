@@ -130,12 +130,24 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
 
   h2 {
     font-size: 15px;
     font-weight: 800;
     margin: 0;
   }
+}
+
+.bloque-acciones {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.tabla-scroll {
+  overflow-x: auto;
 }
 
 .celda-desc {

@@ -71,6 +71,33 @@
   }
 }
 
+.sugerencia {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: #9aa2b1;
+  font-weight: 600;
+
+  strong {
+    color: #0a1638;
+  }
+
+  button {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #0e9e70;
+    font: 700 11.5px 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 .toggle-row {
   display: flex;
   gap: 9px;

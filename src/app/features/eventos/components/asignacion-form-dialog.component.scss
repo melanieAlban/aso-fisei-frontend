@@ -17,6 +17,12 @@
   }
 }
 
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 .select,
 .input-plain {
   width: 100%;

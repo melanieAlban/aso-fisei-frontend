@@ -31,6 +31,9 @@ export class AsignacionFormDialogComponent {
     tipoEntradaId: ['', Validators.required],
     nombreReferencia: ['', Validators.required],
     cantidadAsignada: ['', [Validators.required, Validators.pattern(/^[1-9]\d*$/)]],
+    telefono: [''],
+    semestre: [''],
+    carrera: [''],
   });
 
   constructor() {
@@ -44,6 +47,9 @@ export class AsignacionFormDialogComponent {
         tipoEntradaId: tipos.length === 1 ? tipos[0].id : '',
         nombreReferencia: '',
         cantidadAsignada: '',
+        telefono: '',
+        semestre: '',
+        carrera: '',
       });
     });
   }
@@ -60,13 +66,17 @@ export class AsignacionFormDialogComponent {
 
     this.cargando.set(true);
     this.errorMensaje.set('');
-    const { tipoEntradaId, nombreReferencia, cantidadAsignada } = this.form.getRawValue();
+    const { tipoEntradaId, nombreReferencia, cantidadAsignada, telefono, semestre, carrera } =
+      this.form.getRawValue();
 
     this.eventosService
       .crearAsignacion(this.eventoId(), {
         tipoEntradaId,
         nombreReferencia,
         cantidadAsignada: Number(cantidadAsignada),
+        ...(telefono.trim() ? { telefono: telefono.trim() } : {}),
+        ...(semestre.trim() ? { semestre: semestre.trim() } : {}),
+        ...(carrera.trim() ? { carrera: carrera.trim() } : {}),
       })
       .subscribe({
         next: () => {
