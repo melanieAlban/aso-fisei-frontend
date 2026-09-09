@@ -1,8 +1,19 @@
 <div class="historial-page">
   <header class="page-header">
-    <h1>Historial de ventas</h1>
-    <p>Ventas registradas y anulación de ítems</p>
+    <h1>{{ esAdmin() ? 'Historial de ventas' : 'Mis ventas' }}</h1>
+    <p>{{ esAdmin() ? 'Ventas registradas y anulación de ítems' : 'Lo que registraste tú' }}</p>
   </header>
+
+  <section class="resumen">
+    <div class="tarjeta">
+      <span class="etiqueta">Total vendido</span>
+      <span class="valor">{{ totalVendido() | number: '1.2-2' }}</span>
+    </div>
+    <div class="tarjeta">
+      <span class="etiqueta">Ventas</span>
+      <span class="valor">{{ cantidadVentas() }}</span>
+    </div>
+  </section>
 
   <div class="filtros">
     <div class="campo">

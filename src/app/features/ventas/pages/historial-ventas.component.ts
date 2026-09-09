@@ -79,8 +79,23 @@ export class HistorialVentasComponent implements OnInit {
     return filas;
   });
 
+  readonly totalVendido = computed(() =>
+    this.filas()
+      .filter((f) => !f.anulado)
+      .reduce((acc, f) => acc + f.total, 0),
+  );
+
+  readonly cantidadVentas = computed(
+    () => new Set(this.filas().map((f) => f.ventaId)).size,
+  );
+
   ngOnInit(): void {
     this.inventarioService.cargarProductos();
+    if (!this.esAdmin()) {
+      const hoy = new Date().toISOString().slice(0, 10);
+      this.fDesde.set(hoy);
+      this.fHasta.set(hoy);
+    }
     this.buscar();
   }
 
