@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
@@ -28,7 +29,7 @@ interface FilaVenta {
 @Component({
   selector: 'app-historial-ventas',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, TableModule, TagModule, ToastModule, AnularItemDialogComponent],
+  imports: [DatePipe, DecimalPipe, RouterLink, TableModule, TagModule, ToastModule, AnularItemDialogComponent],
   providers: [MessageService],
   templateUrl: './historial-ventas.component.html',
   styleUrl: './historial-ventas.component.scss',

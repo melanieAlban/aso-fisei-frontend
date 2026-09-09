@@ -5,6 +5,20 @@
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 700 12.5px 'Plus Jakarta Sans', sans-serif;
+  color: #5b6478;
+  text-decoration: none;
+  margin-bottom: 14px;
+
+  &:hover {
+    color: #0a1638;
+  }
+}
+
 .page-header {
   margin-bottom: 18px;
 

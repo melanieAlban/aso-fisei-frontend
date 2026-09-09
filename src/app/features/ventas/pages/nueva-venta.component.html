@@ -20,6 +20,12 @@
     <div class="pos-layout">
       <!-- ===== CATÁLOGO ===== -->
       <div class="catalogo">
+        <div class="catalogo-header">
+          <h1>Nueva venta</h1>
+          <a routerLink="/ventas/historial" class="link-historial">
+            <i class="pi pi-history"></i> {{ esAdmin() ? 'Ver historial' : 'Ver mis ventas' }}
+          </a>
+        </div>
         <div class="buscador">
           <i class="pi pi-search"></i>
           <input

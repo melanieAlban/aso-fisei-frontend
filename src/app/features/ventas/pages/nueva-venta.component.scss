@@ -76,6 +76,35 @@
   overflow-y: auto;
 }
 
+.catalogo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  h1 {
+    font-size: 19px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+}
+
+.link-historial {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 700 12.5px 'Plus Jakarta Sans', sans-serif;
+  color: #5b6478;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: #0a1638;
+  }
+}
+
 .buscador {
   display: flex;
   align-items: center;
