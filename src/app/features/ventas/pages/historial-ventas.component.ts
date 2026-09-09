@@ -13,6 +13,7 @@ import { AnularItemDialogComponent } from '../components/anular-item-dialog.comp
 interface FilaVenta {
   ventaId: string;
   itemId: string;
+  vendedorNombre: string;
   producto: string;
   cantidad: number;
   precioUnit: number;
@@ -62,6 +63,7 @@ export class HistorialVentasComponent implements OnInit {
         filas.push({
           ventaId: v.venta.id,
           itemId: d.id,
+          vendedorNombre: v.vendedorNombre,
           producto: producto?.nombre ?? d.productoId,
           cantidad: d.cantidad,
           precioUnit: d.precioUnitario,

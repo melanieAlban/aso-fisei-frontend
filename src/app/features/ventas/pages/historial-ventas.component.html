@@ -27,6 +27,7 @@
   <p-table [value]="filas()" [loading]="cargando()" class="historial-table">
     <ng-template #header>
       <tr>
+        <th>Vendedor</th>
         <th>Producto</th>
         <th>Cant.</th>
         <th>P. unit</th>
@@ -39,6 +40,7 @@
 
     <ng-template #body let-fila>
       <tr [style.opacity]="fila.anulado ? 0.6 : 1">
+        <td class="celda-vendedor">{{ fila.vendedorNombre }}</td>
         <td>
           <div class="celda-producto" [style.text-decoration]="fila.anulado ? 'line-through' : 'none'">{{ fila.producto }}</div>
           <div class="celda-fecha">{{ fila.fecha | date: 'short' }}</div>
@@ -67,7 +69,7 @@
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="7" class="vacio">No hay ventas que coincidan con los filtros.</td>
+        <td colspan="8" class="vacio">No hay ventas que coincidan con los filtros.</td>
       </tr>
     </ng-template>
   </p-table>

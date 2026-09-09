@@ -30,4 +30,5 @@ export interface Venta {
 export interface VentaConDetalle {
   venta: Venta;
   detalles: DetalleVenta[];
+  vendedorNombre: string;
 }
