@@ -92,11 +92,6 @@ export class HistorialVentasComponent implements OnInit {
 
   ngOnInit(): void {
     this.inventarioService.cargarProductos();
-    if (!this.esAdmin()) {
-      const hoy = new Date().toISOString().slice(0, 10);
-      this.fDesde.set(hoy);
-      this.fHasta.set(hoy);
-    }
     this.buscar();
   }
 
