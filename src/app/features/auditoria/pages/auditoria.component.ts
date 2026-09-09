@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { UsuariosService } from '../../usuarios/services/usuarios.service';
 import { AuditLog } from '../models/auditoria.model';
 import { AuditoriaService } from '../services/auditoria.service';
+import { finDelDia, inicioDelDia } from '../../../shared/utils/fecha.util';
 
 interface AvatarColores {
   bg: string;
@@ -142,8 +143,8 @@ export class AuditoriaComponent implements OnInit {
       usuarioId: this.fUsuarioId() || undefined,
       modulo: this.fModulo() || undefined,
       accion: this.fAccion() || undefined,
-      desde: this.fDesde() || undefined,
-      hasta: this.fHasta() || undefined,
+      desde: this.fDesde() ? inicioDelDia(this.fDesde()) : undefined,
+      hasta: this.fHasta() ? finDelDia(this.fHasta()) : undefined,
     });
   }
 }

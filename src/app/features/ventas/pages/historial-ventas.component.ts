@@ -10,6 +10,7 @@ import { InventarioService } from '../../inventario/services/inventario.service'
 import { MetodoPago, VentaConDetalle } from '../models/venta.model';
 import { VentasService } from '../services/ventas.service';
 import { AnularItemDialogComponent } from '../components/anular-item-dialog.component';
+import { finDelDia, inicioDelDia } from '../../../shared/utils/fecha.util';
 
 interface FilaVenta {
   ventaId: string;
@@ -120,8 +121,8 @@ export class HistorialVentasComponent implements OnInit {
   private buscar(): void {
     this.ventasService.cargarVentas({
       metodoPago: this.fMetodo() || undefined,
-      from: this.fDesde() || undefined,
-      to: this.fHasta() || undefined,
+      from: this.fDesde() ? inicioDelDia(this.fDesde()) : undefined,
+      to: this.fHasta() ? finDelDia(this.fHasta()) : undefined,
     });
   }
 }

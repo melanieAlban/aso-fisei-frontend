@@ -6,6 +6,7 @@ import { TagModule } from 'primeng/tag';
 import { AuthService } from '../../../core/auth/auth.service';
 import { MovimientoInventario, TipoMovimiento } from '../models/movimiento-inventario.model';
 import { InventarioService } from '../services/inventario.service';
+import { finDelDia, inicioDelDia } from '../../../shared/utils/fecha.util';
 
 interface FilaMovimiento {
   producto: string;
@@ -108,8 +109,8 @@ export class MovimientosComponent implements OnInit {
     this.inventarioService
       .cargarMovimientos({
         tipo: this.fTipo() || undefined,
-        desde: this.fDesde() || undefined,
-        hasta: this.fHasta() || undefined,
+        desde: this.fDesde() ? inicioDelDia(this.fDesde()) : undefined,
+        hasta: this.fHasta() ? finDelDia(this.fHasta()) : undefined,
       })
       .subscribe({
         next: (respuesta) => {
