@@ -206,8 +206,15 @@ export class NuevaVentaComponent implements OnInit {
     });
   }
 
-  // Timestamp real (hoy o mañana si cruza medianoche) en el que vence el alquiler.
-  private calcularFinTimestamp(horaInicio: string, horaFin: string): number {
+  // Fecha real (hoy) en la que arranca el alquiler.
+  private calcularFechaInicio(horaInicio: string): Date {
+    const [hI, mI] = horaInicio.split(':').map(Number);
+    const ahora = new Date();
+    return new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), hI, mI, 0, 0);
+  }
+
+  // Fecha real (hoy o mañana si cruza medianoche) en la que vence el alquiler.
+  private calcularFechaFin(horaInicio: string, horaFin: string): Date {
     const [hI, mI] = horaInicio.split(':').map(Number);
     const [hF, mF] = horaFin.split(':').map(Number);
     const ahora = new Date();
@@ -215,7 +222,7 @@ export class NuevaVentaComponent implements OnInit {
     if (hF * 60 + mF <= hI * 60 + mI) {
       fin.setDate(fin.getDate() + 1);
     }
-    return fin.getTime();
+    return fin;
   }
 
   incrementar(productoId: string, stockActual: number): void {
@@ -321,8 +328,9 @@ export class NuevaVentaComponent implements OnInit {
 
         for (const l of this.lineasCarrito()) {
           if (l.producto.cobraPorTiempo && l.horaInicio && l.horaFin) {
-            const finTimestamp = this.calcularFinTimestamp(l.horaInicio, l.horaFin);
-            this.billarTimerService.agregar(l.producto.nombre, l.horaInicio, l.horaFin, finTimestamp);
+            const fechaInicio = this.calcularFechaInicio(l.horaInicio);
+            const fechaFin = this.calcularFechaFin(l.horaInicio, l.horaFin);
+            this.billarTimerService.agregar(l.producto.nombre, fechaInicio, fechaFin);
           }
         }
       },

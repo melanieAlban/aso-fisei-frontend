@@ -27,8 +27,15 @@ export class BillarTimersBannerComponent {
   private readonly notificados = new Set<string>();
 
   constructor() {
-    const intervalId = setInterval(() => this.ahora.set(Date.now()), 1000);
-    this.destroyRef.onDestroy(() => clearInterval(intervalId));
+    this.billarTimerService.cargar();
+
+    const intervalTick = setInterval(() => this.ahora.set(Date.now()), 1000);
+    // Refresca desde el servidor para ver temporizadores que registraron otros usuarios.
+    const intervalSync = setInterval(() => this.billarTimerService.cargar(), 20000);
+    this.destroyRef.onDestroy(() => {
+      clearInterval(intervalTick);
+      clearInterval(intervalSync);
+    });
   }
 
   // Plain method (no computed()) porque lee this.ahora() junto con el efecto
