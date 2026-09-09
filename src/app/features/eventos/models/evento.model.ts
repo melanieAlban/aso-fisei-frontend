@@ -49,6 +49,7 @@ export interface VentaEntrada {
   id: string;
   tipoEntradaId: string;
   usuarioId: string;
+  vendedorNombre: string;
   cantidad: number;
   cantidadCombo: number;
   monto: number;

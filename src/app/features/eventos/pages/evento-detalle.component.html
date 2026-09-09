@@ -164,6 +164,7 @@
       <p-table [value]="ventasEntrada()" dataKey="id" class="tabla">
         <ng-template #header>
           <tr>
+            <th>Vendedor</th>
             <th>Tipo</th>
             <th>Cantidad</th>
             <th>Combo</th>
@@ -175,6 +176,7 @@
         </ng-template>
         <ng-template #body let-v>
           <tr>
+            <td class="celda-desc">{{ v.vendedorNombre }}</td>
             <td>{{ nombreTipoEntrada(v.tipoEntradaId) }}</td>
             <td>{{ v.cantidad }}</td>
             <td>{{ v.cantidadCombo > 0 ? v.cantidadCombo : '—' }}</td>
@@ -189,7 +191,7 @@
           </tr>
         </ng-template>
         <ng-template #emptymessage>
-          <tr><td colspan="7" class="vacio">Todavía no hay ventas directas de entradas.</td></tr>
+          <tr><td colspan="8" class="vacio">Todavía no hay ventas directas de entradas.</td></tr>
         </ng-template>
       </p-table>
     </section>
