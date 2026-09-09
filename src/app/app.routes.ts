@@ -42,6 +42,14 @@ export const routes: Routes = [
         loadChildren: () => import('./features/ventas/ventas.routes').then((m) => m.VENTAS_ROUTES),
       },
       {
+        path: 'vender-entradas',
+        loadChildren: () =>
+          import('./features/vender-entradas/vender-entradas.routes').then(
+            (m) => m.VENDER_ENTRADAS_ROUTES,
+          ),
+        canActivate: [permisoGuard(['Admin', 'Vendedor'])],
+      },
+      {
         path: 'caja',
         loadChildren: () => import('./features/caja/caja.routes').then((m) => m.CAJA_ROUTES),
         canActivate: [permisoGuard(['Admin'])],

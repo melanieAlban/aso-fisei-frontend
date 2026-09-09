@@ -7,6 +7,7 @@ interface NavItem {
   route: string;
   icon: string;
   soloAdmin?: boolean;
+  rolesPermitidos?: string[];
 }
 
 @Component({
@@ -40,6 +41,12 @@ export class SidebarComponent {
     { label: 'Usuarios y Roles', route: '/usuarios', icon: 'usuarios', soloAdmin: true },
     { label: 'Inventario', route: '/inventario', icon: 'inventario' },
     { label: 'Ventas', route: '/ventas', icon: 'ventas' },
+    {
+      label: 'Vender Entradas',
+      route: '/vender-entradas',
+      icon: 'entradas',
+      rolesPermitidos: ['Admin', 'Vendedor'],
+    },
     { label: 'Caja / Fondo', route: '/caja', icon: 'caja', soloAdmin: true },
     { label: 'Gastos', route: '/gastos', icon: 'gastos', soloAdmin: true },
     { label: 'Deudas', route: '/deudas', icon: 'deudas', soloAdmin: true },
@@ -48,7 +55,9 @@ export class SidebarComponent {
   ];
 
   visible(item: NavItem): boolean {
-    return !item.soloAdmin || this.authService.tieneRol('Admin');
+    if (item.soloAdmin) return this.authService.tieneRol('Admin');
+    if (item.rolesPermitidos) return item.rolesPermitidos.some((rol) => this.authService.tieneRol(rol));
+    return true;
   }
 
   cerrarSesion(): void {

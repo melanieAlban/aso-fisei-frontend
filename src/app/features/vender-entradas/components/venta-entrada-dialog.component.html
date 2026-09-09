@@ -1,0 +1,57 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  [header]="'Vender: ' + (item()?.tipoEntrada?.nombre ?? '')"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <p class="disponible">Disponibles: {{ item()?.cantidadDisponible ?? 0 }}</p>
+
+    @if (tieneCombo()) {
+      <div class="campo">
+        <label>Modo de venta</label>
+        <div class="toggle-row">
+          <button type="button" class="toggle" [class.active]="!esCombo()" (click)="elegirIndividual()">
+            Individual ({{ item()?.tipoEntrada?.precio | number: '1.2-2' }})
+          </button>
+          <button type="button" class="toggle" [class.active]="esCombo()" (click)="elegirCombo()">
+            Combo ({{ item()?.tipoEntrada?.cantidadCombo }} x {{ item()?.tipoEntrada?.precioCombo | number: '1.2-2' }})
+          </button>
+        </div>
+      </div>
+    }
+
+    <div class="campo">
+      <label for="cantidad">{{ esCombo() ? 'Cantidad de combos' : 'Cantidad de entradas' }}</label>
+      <input id="cantidad" type="number" min="1" formControlName="cantidad" class="input-plain" />
+      @if (esCombo()) {
+        <span class="hint">= {{ entradasResultantes() }} entrada(s)</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label>Método de pago</label>
+      <div class="toggle-row">
+        <button type="button" class="toggle" [class.active]="metodoPago() === 'EFECTIVO'" (click)="elegirEfectivo()">Efectivo</button>
+        <button type="button" class="toggle" [class.active]="metodoPago() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">Transferencia</button>
+      </div>
+    </div>
+
+    <div class="total-row">
+      <span>Total</span>
+      <span class="total-valor">{{ montoSugerido() | number: '1.2-2' }}</span>
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Vender" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
+    </div>
+  </form>
+</p-dialog>

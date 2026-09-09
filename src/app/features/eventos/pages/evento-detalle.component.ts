@@ -7,7 +7,7 @@ import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { AsignacionEntradas, GastoEvento, IngresoEvento, TipoEntrada } from '../models/evento.model';
+import { AsignacionEntradas, GastoEvento, IngresoEvento, TipoEntrada, VentaEntrada } from '../models/evento.model';
 import { EventosService } from '../services/eventos.service';
 import { EventoFormDialogComponent } from '../components/evento-form-dialog.component';
 import { AnularEventoDialogComponent } from '../components/anular-evento-dialog.component';
@@ -58,6 +58,7 @@ export class EventoDetalleComponent implements OnInit {
   readonly asignaciones = this.eventosService.asignaciones;
   readonly ingresos = this.eventosService.ingresos;
   readonly gastos = this.eventosService.gastos;
+  readonly ventasEntrada = this.eventosService.ventasEntrada;
   readonly cargando = this.eventosService.cargando;
 
   readonly esActivo = computed(() => this.evento()?.estado === 'ACTIVO');
@@ -94,6 +95,7 @@ export class EventoDetalleComponent implements OnInit {
     this.eventosService.cargarAsignaciones(this.eventoId);
     this.eventosService.cargarIngresos(this.eventoId);
     this.eventosService.cargarGastos(this.eventoId);
+    this.eventosService.cargarVentasEntrada(this.eventoId);
   }
 
   colorEstado(estado: string): { background: string; color: string } {
@@ -215,6 +217,21 @@ export class EventoDetalleComponent implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: this.mensajeError(err, 'No se pudo borrar el gasto.'),
+        }),
+    });
+  }
+
+  borrarVentaEntrada(venta: VentaEntrada): void {
+    if (!confirm('¿Anular esta venta de entrada?')) return;
+    this.eventosService.eliminarVentaEntrada(this.eventoId, venta.id).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Venta anulada' });
+        this.eventosService.cargarResumen(this.eventoId);
+      },
+      error: (err: HttpErrorResponse) =>
+        this.messageService.add({
+          severity: 'error',
+          summary: this.mensajeError(err, 'No se pudo anular la venta.'),
         }),
     });
   }

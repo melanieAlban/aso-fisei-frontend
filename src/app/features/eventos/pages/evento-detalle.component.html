@@ -44,6 +44,7 @@
         <div class="tarjeta">
           <span class="etiqueta">Ingresos por entradas</span>
           <span class="valor">{{ r.ingresosEntradas | number: '1.2-2' }}</span>
+          <span class="subvalor">Asignaciones {{ r.ingresosAsignaciones | number: '1.2-2' }} · Directo {{ r.ingresosVentaDirecta | number: '1.2-2' }}</span>
         </div>
         <div class="tarjeta">
           <span class="etiqueta">Total gastos</span>
@@ -153,6 +154,44 @@
           </ng-template>
         </p-table>
       </div>
+    </section>
+
+    <section class="bloque">
+      <div class="bloque-header">
+        <h2>Ventas directas de entradas</h2>
+        <p class="bloque-subtitulo">Vendidas por un vendedor desde "Vender entradas", aparte de las asignaciones</p>
+      </div>
+      <p-table [value]="ventasEntrada()" dataKey="id" class="tabla">
+        <ng-template #header>
+          <tr>
+            <th>Tipo</th>
+            <th>Cantidad</th>
+            <th>Combo</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-v>
+          <tr>
+            <td>{{ nombreTipoEntrada(v.tipoEntradaId) }}</td>
+            <td>{{ v.cantidad }}</td>
+            <td>{{ v.cantidadCombo > 0 ? v.cantidadCombo : '—' }}</td>
+            <td class="celda-monto">{{ v.monto | number: '1.2-2' }}</td>
+            <td>{{ v.metodoPago === 'EFECTIVO' ? 'Efectivo' : 'Transferencia' }}</td>
+            <td class="celda-fecha">{{ v.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td class="acciones-celda">
+              @if (esActivo()) {
+                <button type="button" class="btn-borrar" (click)="borrarVentaEntrada(v)">Anular</button>
+              }
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr><td colspan="7" class="vacio">Todavía no hay ventas directas de entradas.</td></tr>
+        </ng-template>
+      </p-table>
     </section>
 
     <section class="bloque">

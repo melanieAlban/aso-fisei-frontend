@@ -1,0 +1,182 @@
+:host {
+  display: block;
+  padding: 24px;
+  color: #0a1638;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.page-header {
+  margin-bottom: 20px;
+
+  h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: #5b6478;
+  }
+}
+
+.vacio {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9aa2b1;
+  font-size: 14px;
+}
+
+.vacio-sm {
+  text-align: center;
+  padding: 24px;
+  color: #9aa2b1;
+  font-size: 13px;
+}
+
+.eventos-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 24px;
+}
+
+.chip-evento {
+  height: 40px;
+  padding: 0 18px;
+  border: 1.5px solid #e1e4ea;
+  background: #fff;
+  color: #5b6478;
+  border-radius: 999px;
+  cursor: pointer;
+  font: 700 13px 'Plus Jakarta Sans', sans-serif;
+
+  &.active {
+    background: #0a1638;
+    color: #fff;
+    border-color: #0a1638;
+  }
+}
+
+.bloque {
+  background: #fff;
+  border: 1px solid #eaecef;
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0 0 14px;
+  }
+}
+
+.grid-tipos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 13px;
+}
+
+.tarjeta-tipo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 16px;
+  border-radius: 15px;
+  background: #f7f8fa;
+  border: 1px solid #eaecef;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+
+  &:hover:not(.agotado) {
+    border-color: #12d897;
+  }
+
+  &.agotado {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .nombre {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .precio {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0a7d58;
+  }
+
+  .precio-combo {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #9aa2b1;
+  }
+
+  .disponible {
+    margin-top: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0e9e70;
+
+    &.agotado-texto {
+      color: #c0392b;
+    }
+  }
+}
+
+.tabla-ventas {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #9aa2b1;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eef0f3;
+  }
+
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #f2f4f6;
+    font-size: 13px;
+  }
+}
+
+.celda-monto {
+  font-weight: 800;
+}
+
+.celda-fecha {
+  font-size: 12px;
+  color: #9aa2b1;
+  font-weight: 600;
+}
+
+.acciones-celda {
+  text-align: right;
+}
+
+.btn-borrar {
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid #f0d4d4;
+  background: #fef5f5;
+  color: #c0392b;
+  border-radius: 8px;
+  cursor: pointer;
+  font: 700 11px 'Plus Jakarta Sans', sans-serif;
+
+  &:hover {
+    background: #fde8e8;
+  }
+}

@@ -45,6 +45,22 @@ export interface AsignacionEntradas {
   fecha: string;
 }
 
+export interface VentaEntrada {
+  id: string;
+  tipoEntradaId: string;
+  usuarioId: string;
+  cantidad: number;
+  cantidadCombo: number;
+  monto: number;
+  metodoPago: MetodoPagoEvento;
+  fecha: string;
+}
+
+export interface DisponibilidadTipoEntrada {
+  tipoEntrada: TipoEntrada;
+  cantidadDisponible: number;
+}
+
 export interface IngresoEvento {
   id: string;
   eventoId: string;
@@ -68,6 +84,8 @@ export interface GastoEvento {
 export interface ResumenEvento {
   evento: Evento;
   ingresosManuales: number;
+  ingresosAsignaciones: number;
+  ingresosVentaDirecta: number;
   ingresosEntradas: number;
   totalIngresos: number;
   totalGastos: number;

@@ -1,0 +1,99 @@
+<div class="vender-page">
+  <header class="page-header">
+    <div>
+      <h1>Vender entradas</h1>
+      <p>Registra la venta de entradas de eventos activos</p>
+    </div>
+  </header>
+
+  @if (eventosActivos().length === 0) {
+    <div class="vacio">
+      @if (cargando()) {
+        Cargando eventos…
+      } @else {
+        No hay eventos activos con entradas para vender.
+      }
+    </div>
+  } @else {
+    <div class="eventos-row">
+      @for (e of eventosActivos(); track e.id) {
+        <button
+          type="button"
+          class="chip-evento"
+          [class.active]="eventoSeleccionadoId() === e.id"
+          (click)="seleccionarEvento(e.id)"
+        >
+          {{ e.nombre }}
+        </button>
+      }
+    </div>
+
+    @if (eventoSeleccionado(); as evento) {
+      <section class="bloque">
+        <h2>Tipos de entrada</h2>
+        @if (disponibilidad().length === 0) {
+          <p class="vacio-sm">Este evento todavía no tiene tipos de entrada configurados.</p>
+        } @else {
+          <div class="grid-tipos">
+            @for (item of disponibilidad(); track item.tipoEntrada.id) {
+              <button
+                type="button"
+                class="tarjeta-tipo"
+                [class.agotado]="item.cantidadDisponible <= 0"
+                [disabled]="item.cantidadDisponible <= 0"
+                (click)="abrirVenta(item)"
+              >
+                <span class="nombre">{{ item.tipoEntrada.nombre }}</span>
+                <span class="precio">{{ item.tipoEntrada.precio | number: '1.2-2' }}</span>
+                @if (item.tipoEntrada.precioCombo && item.tipoEntrada.cantidadCombo) {
+                  <span class="precio-combo">{{ item.tipoEntrada.cantidadCombo }} x {{ item.tipoEntrada.precioCombo | number: '1.2-2' }}</span>
+                }
+                <span class="disponible" [class.agotado-texto]="item.cantidadDisponible <= 0">
+                  {{ item.cantidadDisponible > 0 ? item.cantidadDisponible + ' disponibles' : 'Agotado' }}
+                </span>
+              </button>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="bloque">
+        <h2>Ventas registradas</h2>
+        <table class="tabla-ventas">
+          <thead>
+            <tr>
+              <th>Cantidad</th>
+              <th>Monto</th>
+              <th>Método</th>
+              <th>Fecha</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (v of ventasEntrada(); track v.id) {
+              <tr>
+                <td>{{ v.cantidad }}{{ v.cantidadCombo > 0 ? ' (combo: ' + v.cantidadCombo + ')' : '' }}</td>
+                <td class="celda-monto">{{ v.monto | number: '1.2-2' }}</td>
+                <td>{{ v.metodoPago === 'EFECTIVO' ? 'Efectivo' : 'Transferencia' }}</td>
+                <td class="celda-fecha">{{ v.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td class="acciones-celda">
+                  <button type="button" class="btn-borrar" (click)="borrarVenta(v)">Anular</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="5" class="vacio-sm">Todavía no hay ventas registradas.</td></tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
+  }
+
+  <app-venta-entrada-dialog
+    [(visible)]="dialogVisible"
+    [eventoId]="eventoSeleccionadoId() ?? ''"
+    [item]="itemSeleccionado()"
+  />
+
+  <p-toast />
+</div>

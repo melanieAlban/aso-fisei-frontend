@@ -4,6 +4,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { RespuestaEstandar } from '../../../shared/models/usuario.model';
 import {
   AsignacionEntradas,
+  DisponibilidadTipoEntrada,
   Evento,
   GastoEvento,
   IngresoEvento,
@@ -11,6 +12,7 @@ import {
   ResultadoCierreEvento,
   ResumenEvento,
   TipoEntrada,
+  VentaEntrada,
 } from '../models/evento.model';
 
 interface ListarEventosData {
@@ -47,6 +49,12 @@ export class EventosService {
 
   private readonly _gastos = signal<GastoEvento[]>([]);
   readonly gastos = this._gastos.asReadonly();
+
+  private readonly _ventasEntrada = signal<VentaEntrada[]>([]);
+  readonly ventasEntrada = this._ventasEntrada.asReadonly();
+
+  private readonly _disponibilidad = signal<DisponibilidadTipoEntrada[]>([]);
+  readonly disponibilidad = this._disponibilidad.asReadonly();
 
   cargarEventos(): void {
     this._cargando.set(true);
@@ -212,6 +220,44 @@ export class EventosService {
     );
   }
 
+  cargarDisponibilidad(eventoId: string): void {
+    this.api
+      .get<RespuestaEstandar<DisponibilidadTipoEntrada[]>>(`/events/${eventoId}/ticket-availability`)
+      .subscribe({
+        next: (respuesta) => this._disponibilidad.set(respuesta.data),
+      });
+  }
+
+  cargarVentasEntrada(eventoId: string): void {
+    this.api.get<RespuestaEstandar<VentaEntrada[]>>(`/events/${eventoId}/ticket-sales`).subscribe({
+      next: (respuesta) => this._ventasEntrada.set(respuesta.data),
+    });
+  }
+
+  registrarVentaEntrada(
+    eventoId: string,
+    tipoId: string,
+    datos: { cantidad: number; esCombo: boolean; metodoPago: MetodoPagoEvento },
+  ): Observable<RespuestaEstandar<VentaEntrada>> {
+    return this.api
+      .post<RespuestaEstandar<VentaEntrada>>(`/events/${eventoId}/ticket-types/${tipoId}/sales`, datos)
+      .pipe(
+        tap((respuesta) => {
+          this._ventasEntrada.update((lista) => [respuesta.data, ...lista]);
+          this.cargarDisponibilidad(eventoId);
+        }),
+      );
+  }
+
+  eliminarVentaEntrada(eventoId: string, ventaId: string): Observable<RespuestaEstandar<null>> {
+    return this.api.delete<RespuestaEstandar<null>>(`/events/${eventoId}/ticket-sales/${ventaId}`).pipe(
+      tap(() => {
+        this._ventasEntrada.update((lista) => lista.filter((v) => v.id !== ventaId));
+        this.cargarDisponibilidad(eventoId);
+      }),
+    );
+  }
+
   cargarIngresos(id: string): void {
     this.api.get<RespuestaEstandar<IngresoEvento[]>>(`/events/${id}/income`).subscribe({
       next: (respuesta) => this._ingresos.set(respuesta.data),
@@ -293,5 +339,7 @@ export class EventosService {
     this._asignaciones.set([]);
     this._ingresos.set([]);
     this._gastos.set([]);
+    this._ventasEntrada.set([]);
+    this._disponibilidad.set([]);
   }
 }
