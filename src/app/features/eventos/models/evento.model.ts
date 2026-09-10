@@ -62,6 +62,15 @@ export interface DisponibilidadTipoEntrada {
   cantidadDisponible: number;
 }
 
+export interface CompromisoPagoEvento {
+  id: string;
+  eventoId: string;
+  descripcion: string;
+  montoTotal: number;
+  montoPagado: number;
+  fecha: string;
+}
+
 export interface IngresoEvento {
   id: string;
   eventoId: string;

@@ -59,6 +59,43 @@
 
     <section class="bloque">
       <div class="bloque-header">
+        <h2>Compromisos de pago</h2>
+        <p class="bloque-subtitulo">Ej. el alquiler del lugar: cuánto cuesta en total y cuánto ya se ha pagado</p>
+        @if (esActivo()) {
+          <p-button label="Nuevo compromiso" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="abrirNuevoCompromiso()" />
+        }
+      </div>
+      @if (compromisosPago().length === 0) {
+        <p class="vacio-sm">Todavía no hay compromisos de pago registrados.</p>
+      } @else {
+        <div class="grid-compromisos">
+          @for (c of compromisosPago(); track c.id) {
+            <div class="tarjeta-compromiso">
+              <div class="compromiso-top">
+                <span class="compromiso-desc">{{ c.descripcion }}</span>
+                @if (esActivo()) {
+                  <button type="button" class="btn-borrar" (click)="borrarCompromisoPago(c)">Borrar</button>
+                }
+              </div>
+              <div class="barra-progreso">
+                <div class="barra-relleno" [style.width.%]="porcentajePagado(c)"></div>
+              </div>
+              <div class="compromiso-montos">
+                <span>Total <strong>{{ c.montoTotal | number: '1.2-2' }}</strong></span>
+                <span>Pagado <strong class="pagado">{{ c.montoPagado | number: '1.2-2' }}</strong></span>
+                <span>Falta <strong class="pendiente">{{ pendienteCompromiso(c) | number: '1.2-2' }}</strong></span>
+              </div>
+              @if (esActivo() && pendienteCompromiso(c) > 0) {
+                <button type="button" class="btn-detalle btn-abonar" (click)="abrirAbonarCompromiso(c)">Abonar</button>
+              }
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="bloque">
+      <div class="bloque-header">
         <h2>Tipos de entrada</h2>
         @if (esActivo()) {
           <p-button label="Nuevo tipo" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="abrirNuevoTipoEntrada()" />
@@ -277,6 +314,8 @@
     <app-asignacion-form-dialog [(visible)]="asignacionVisible" [eventoId]="e.id" [tiposEntrada]="tiposEntrada()" />
     <app-actualizar-asignacion-dialog [(visible)]="actualizarAsignacionVisible" [asignacion]="asignacionSeleccionada()" [tipoEntrada]="tipoEntradaDeAsignacion()" />
     <app-movimiento-evento-dialog [(visible)]="movimientoVisible" [eventoId]="e.id" [tipo]="movimientoTipo()" [movimiento]="movimientoSeleccionado()" />
+    <app-compromiso-pago-form-dialog [(visible)]="compromisoVisible" [eventoId]="e.id" />
+    <app-abonar-compromiso-dialog [(visible)]="abonarCompromisoVisible" [eventoId]="e.id" [compromiso]="compromisoSeleccionado()" />
   }
 
   <p-toast />

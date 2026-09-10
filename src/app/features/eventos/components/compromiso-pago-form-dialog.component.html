@@ -1,0 +1,42 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  header="Nuevo compromiso de pago"
+  [draggable]="false"
+  [dismissableMask]="true"
+>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <div class="campo">
+      <label for="descripcion">Descripción</label>
+      <input id="descripcion" type="text" formControlName="descripcion" placeholder="Ej. Alquiler del salón" class="input-plain" />
+    </div>
+
+    <div class="campo">
+      <label for="montoTotal">Costo total</label>
+      <div class="campo-monto">
+        <span>$</span>
+        <input id="montoTotal" type="text" inputmode="decimal" formControlName="montoTotal" placeholder="0.00" />
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="montoPagadoInicial">Ya pagado hasta ahora (opcional)</label>
+      <div class="campo-monto">
+        <span>$</span>
+        <input id="montoPagadoInicial" type="text" inputmode="decimal" formControlName="montoPagadoInicial" placeholder="0.00" />
+      </div>
+      <p class="hint">Solo para reflejar pagos que ya registraste antes como gasto suelto — esto NO crea un gasto nuevo.</p>
+    </div>
+
+    @if (errorMensaje()) {
+      <p class="error">{{ errorMensaje() }}</p>
+    }
+
+    <div class="acciones">
+      <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
+      <p-button label="Crear" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
+    </div>
+  </form>
+</p-dialog>
