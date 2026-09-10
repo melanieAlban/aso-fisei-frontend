@@ -4,6 +4,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { RespuestaEstandar } from '../../../shared/models/usuario.model';
 import {
   AsignacionEntradas,
+  CompromisoPagoEvento,
   DisponibilidadTipoEntrada,
   Evento,
   GastoEvento,
@@ -55,6 +56,9 @@ export class EventosService {
 
   private readonly _disponibilidad = signal<DisponibilidadTipoEntrada[]>([]);
   readonly disponibilidad = this._disponibilidad.asReadonly();
+
+  private readonly _compromisosPago = signal<CompromisoPagoEvento[]>([]);
+  readonly compromisosPago = this._compromisosPago.asReadonly();
 
   cargarEventos(): void {
     this._cargando.set(true);
@@ -332,6 +336,47 @@ export class EventosService {
     );
   }
 
+  cargarCompromisosPago(eventoId: string): void {
+    this.api
+      .get<RespuestaEstandar<CompromisoPagoEvento[]>>(`/events/${eventoId}/payment-commitments`)
+      .subscribe({
+        next: (respuesta) => this._compromisosPago.set(respuesta.data),
+      });
+  }
+
+  crearCompromisoPago(
+    eventoId: string,
+    datos: { descripcion: string; montoTotal: number; montoPagadoInicial?: number },
+  ): Observable<RespuestaEstandar<CompromisoPagoEvento>> {
+    return this.api
+      .post<RespuestaEstandar<CompromisoPagoEvento>>(`/events/${eventoId}/payment-commitments`, datos)
+      .pipe(tap((respuesta) => this._compromisosPago.update((lista) => [respuesta.data, ...lista])));
+  }
+
+  abonarCompromisoPago(
+    eventoId: string,
+    compromisoId: string,
+    datos: { monto: number; metodoPago: MetodoPagoEvento },
+  ): Observable<RespuestaEstandar<CompromisoPagoEvento>> {
+    return this.api
+      .post<RespuestaEstandar<CompromisoPagoEvento>>(`/payment-commitments/${compromisoId}/payments`, datos)
+      .pipe(
+        tap((respuesta) => {
+          this._compromisosPago.update((lista) =>
+            lista.map((c) => (c.id === respuesta.data.id ? respuesta.data : c)),
+          );
+          this.cargarGastos(eventoId);
+          this.cargarResumen(eventoId);
+        }),
+      );
+  }
+
+  eliminarCompromisoPago(compromisoId: string): Observable<RespuestaEstandar<null>> {
+    return this.api.delete<RespuestaEstandar<null>>(`/payment-commitments/${compromisoId}`).pipe(
+      tap(() => this._compromisosPago.update((lista) => lista.filter((c) => c.id !== compromisoId))),
+    );
+  }
+
   limpiarActual(): void {
     this._eventoActual.set(null);
     this._resumenActual.set(null);
@@ -341,5 +386,6 @@ export class EventosService {
     this._gastos.set([]);
     this._ventasEntrada.set([]);
     this._disponibilidad.set([]);
+    this._compromisosPago.set([]);
   }
 }

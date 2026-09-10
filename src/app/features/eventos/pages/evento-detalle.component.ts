@@ -7,7 +7,14 @@ import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { AsignacionEntradas, GastoEvento, IngresoEvento, TipoEntrada, VentaEntrada } from '../models/evento.model';
+import {
+  AsignacionEntradas,
+  CompromisoPagoEvento,
+  GastoEvento,
+  IngresoEvento,
+  TipoEntrada,
+  VentaEntrada,
+} from '../models/evento.model';
 import { EventosService } from '../services/eventos.service';
 import { EventoFormDialogComponent } from '../components/evento-form-dialog.component';
 import { AnularEventoDialogComponent } from '../components/anular-evento-dialog.component';
@@ -15,6 +22,8 @@ import { CerrarEventoDialogComponent } from '../components/cerrar-evento-dialog.
 import { TipoEntradaFormDialogComponent } from '../components/tipo-entrada-form-dialog.component';
 import { AsignacionFormDialogComponent } from '../components/asignacion-form-dialog.component';
 import { ActualizarAsignacionDialogComponent } from '../components/actualizar-asignacion-dialog.component';
+import { CompromisoPagoFormDialogComponent } from '../components/compromiso-pago-form-dialog.component';
+import { AbonarCompromisoDialogComponent } from '../components/abonar-compromiso-dialog.component';
 import {
   MovimientoEventoDialogComponent,
   MovimientoEventoEditable,
@@ -38,6 +47,8 @@ import {
     TipoEntradaFormDialogComponent,
     AsignacionFormDialogComponent,
     ActualizarAsignacionDialogComponent,
+    CompromisoPagoFormDialogComponent,
+    AbonarCompromisoDialogComponent,
     MovimientoEventoDialogComponent,
   ],
   providers: [MessageService],
@@ -59,6 +70,7 @@ export class EventoDetalleComponent implements OnInit {
   readonly ingresos = this.eventosService.ingresos;
   readonly gastos = this.eventosService.gastos;
   readonly ventasEntrada = this.eventosService.ventasEntrada;
+  readonly compromisosPago = this.eventosService.compromisosPago;
   readonly cargando = this.eventosService.cargando;
 
   readonly esActivo = computed(() => this.evento()?.estado === 'ACTIVO');
@@ -83,6 +95,10 @@ export class EventoDetalleComponent implements OnInit {
   readonly movimientoTipo = signal<TipoMovimientoEvento>('ingreso');
   readonly movimientoSeleccionado = signal<MovimientoEventoEditable | null>(null);
 
+  readonly compromisoVisible = signal(false);
+  readonly abonarCompromisoVisible = signal(false);
+  readonly compromisoSeleccionado = signal<CompromisoPagoEvento | null>(null);
+
   ngOnInit(): void {
     this.cargarTodo();
     this.destroyRef.onDestroy(() => this.eventosService.limpiarActual());
@@ -96,6 +112,7 @@ export class EventoDetalleComponent implements OnInit {
     this.eventosService.cargarIngresos(this.eventoId);
     this.eventosService.cargarGastos(this.eventoId);
     this.eventosService.cargarVentasEntrada(this.eventoId);
+    this.eventosService.cargarCompromisosPago(this.eventoId);
   }
 
   colorEstado(estado: string): { background: string; color: string } {
@@ -161,6 +178,36 @@ export class EventoDetalleComponent implements OnInit {
     this.movimientoTipo.set('gasto');
     this.movimientoSeleccionado.set(gasto);
     this.movimientoVisible.set(true);
+  }
+
+  abrirNuevoCompromiso(): void {
+    this.compromisoVisible.set(true);
+  }
+
+  abrirAbonarCompromiso(compromiso: CompromisoPagoEvento): void {
+    this.compromisoSeleccionado.set(compromiso);
+    this.abonarCompromisoVisible.set(true);
+  }
+
+  pendienteCompromiso(c: CompromisoPagoEvento): number {
+    return Math.round((c.montoTotal - c.montoPagado) * 100) / 100;
+  }
+
+  porcentajePagado(c: CompromisoPagoEvento): number {
+    if (c.montoTotal <= 0) return 0;
+    return Math.min(100, Math.round((c.montoPagado / c.montoTotal) * 100));
+  }
+
+  borrarCompromisoPago(compromiso: CompromisoPagoEvento): void {
+    if (!confirm(`¿Borrar el compromiso "${compromiso.descripcion}"? Esto no borra los abonos ya registrados como gasto.`)) return;
+    this.eventosService.eliminarCompromisoPago(compromiso.id).subscribe({
+      next: () => this.messageService.add({ severity: 'success', summary: 'Compromiso borrado' }),
+      error: (err: HttpErrorResponse) =>
+        this.messageService.add({
+          severity: 'error',
+          summary: this.mensajeError(err, 'No se pudo borrar el compromiso.'),
+        }),
+    });
   }
 
   private mensajeError(err: HttpErrorResponse, fallback: string): string {

@@ -225,6 +225,93 @@
   font-size: 13.5px;
 }
 
+.vacio-sm {
+  padding: 14px 4px;
+  color: #9aa2b1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.grid-compromisos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.tarjeta-compromiso {
+  border: 1px solid #eaecef;
+  border-radius: 13px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compromiso-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.compromiso-desc {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0a1638;
+}
+
+.btn-borrar {
+  border: none;
+  background: none;
+  color: #c0392b;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.barra-progreso {
+  height: 8px;
+  border-radius: 5px;
+  background: #eef0f4;
+  overflow: hidden;
+}
+
+.barra-relleno {
+  height: 100%;
+  background: #2e7d32;
+  border-radius: 5px;
+  transition: width 0.2s ease;
+}
+
+.compromiso-montos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: #9aa2b1;
+  font-weight: 600;
+
+  strong {
+    display: block;
+    font-size: 13.5px;
+    color: #0a1638;
+    font-weight: 800;
+
+    &.pagado {
+      color: #2e7d32;
+    }
+
+    &.pendiente {
+      color: #c0392b;
+    }
+  }
+}
+
+.btn-abonar {
+  align-self: flex-start;
+}
+
 :host ::ng-deep {
   .tabla .p-datatable-thead > tr > th {
     background: #fff;
