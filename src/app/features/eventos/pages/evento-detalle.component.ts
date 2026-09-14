@@ -317,11 +317,13 @@ export class EventoDetalleComponent implements OnInit {
         a.metodoPago === 'EFECTIVO' ? 'Efectivo' : a.metodoPago === 'TRANSFERENCIA' ? 'Transferencia' : '',
       ]
         .map(escaparCsv)
-        .join(',');
+        .join(';');
     });
 
-    // BOM al inicio para que Excel detecte UTF-8 y no rompa las tildes/ñ.
-    const contenido = '﻿' + [encabezados.map(escaparCsv).join(','), ...lineas].join('\r\n');
+    // BOM + "sep=;" para que Excel abra en español separando bien las columnas
+    // (en configuración regional ES/EC, Excel usa coma como decimal y espera ; como separador de columnas).
+    const contenido =
+      '﻿sep=;\r\n' + [encabezados.map(escaparCsv).join(';'), ...lineas].join('\r\n');
     const blob = new Blob([contenido], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const enlace = document.createElement('a');
