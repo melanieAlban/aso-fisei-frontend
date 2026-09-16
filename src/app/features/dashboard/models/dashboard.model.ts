@@ -53,7 +53,7 @@ export interface VentaPorDia {
 }
 
 export interface Dashboard {
-  ventasHoy: VentasResumen;
+  ventasHoy: VentasResumen | { cantidadTransacciones: number };
   productosPocoStock: ProductosPocoStock;
   cajaActual?: CajaActual;
   fondoGeneral?: FondoGeneralResumen;
