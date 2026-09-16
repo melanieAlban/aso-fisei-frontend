@@ -35,6 +35,11 @@ export class DashboardComponent implements OnInit {
     return fondo ? redondearDinero(fondo.saldoEfectivo + fondo.saldoTransferencia) : 0;
   });
 
+  readonly ventasHoyTotal = computed(() => {
+    const v = this.dashboard()?.ventasHoy;
+    return v && 'total' in v ? v.total : 0;
+  });
+
   readonly caja = computed(() => this.dashboard()?.cajaActual);
   readonly ventasCajaTotal = computed(() => {
     const c = this.caja();

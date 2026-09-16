@@ -12,17 +12,17 @@
 
   @if (dashboard(); as d) {
     <!-- ===== KPI ROW ===== -->
-    <section class="kpi-row" [class.kpi-row-4]="esCompleto()" [class.kpi-row-2]="!esCompleto()">
-      <div class="kpi-card">
-        <div class="icono icono-mint">
-          <i class="pi pi-arrow-up-right"></i>
-        </div>
-        <div class="etiqueta">Ventas del día</div>
-        <div class="valor">{{ d.ventasHoy.total | number: '1.2-2' }}</div>
-        <div class="detalle">{{ d.ventasHoy.cantidadTransacciones }} transacciones hoy</div>
-      </div>
-
+    <section class="kpi-row" [class.kpi-row-4]="esCompleto()" [class.kpi-row-1]="!esCompleto()">
       @if (esCompleto()) {
+        <div class="kpi-card">
+          <div class="icono icono-mint">
+            <i class="pi pi-arrow-up-right"></i>
+          </div>
+          <div class="etiqueta">Ventas del día</div>
+          <div class="valor">{{ ventasHoyTotal() | number: '1.2-2' }}</div>
+          <div class="detalle">{{ d.ventasHoy.cantidadTransacciones }} transacciones hoy</div>
+        </div>
+
         <div class="kpi-card">
           <div class="icono icono-navy"><i class="pi pi-credit-card"></i></div>
           <div class="etiqueta">Fondo General</div>
