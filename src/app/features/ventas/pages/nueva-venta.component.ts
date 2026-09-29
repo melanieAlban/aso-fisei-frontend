@@ -69,7 +69,8 @@ export class NuevaVentaComponent implements OnInit {
 
   readonly productosFiltrados = computed(() => {
     const q = this.query().trim().toLowerCase();
-    const lista = this.productos();
+    // Los que cobran por tiempo (ej. billar) no manejan stock como los demas.
+    const lista = this.productos().filter((p) => p.cobraPorTiempo || p.stockActual > 0);
     if (!q) return lista;
     return lista.filter((p) => p.nombre.toLowerCase().includes(q));
   });
