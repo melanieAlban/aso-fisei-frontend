@@ -42,7 +42,9 @@ export class InventarioService {
 
   cargarProductos(): void {
     this._cargando.set(true);
-    this.api.get<RespuestaEstandar<ListarProductosData>>('/products').subscribe({
+    // limit alto para traer el catalogo completo: estas pantallas (inventario y
+    // venta) necesitan verlo entero, no solo la primera pagina de 20.
+    this.api.get<RespuestaEstandar<ListarProductosData>>('/products?limit=1000').subscribe({
       next: (respuesta) => {
         this._productos.set(respuesta.data.productos);
         this._cargando.set(false);
