@@ -241,7 +241,7 @@ export class EventosService {
   registrarVentaEntrada(
     eventoId: string,
     tipoId: string,
-    datos: { cantidad: number; esCombo: boolean; metodoPago: MetodoPagoEvento },
+    datos: { cantidad: number; esCombo: boolean; montoEfectivo: number; montoTransferencia: number },
   ): Observable<RespuestaEstandar<VentaEntrada>> {
     return this.api
       .post<RespuestaEstandar<VentaEntrada>>(`/events/${eventoId}/ticket-types/${tipoId}/sales`, datos)

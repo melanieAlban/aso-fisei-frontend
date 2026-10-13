@@ -76,7 +76,7 @@
                 <td class="celda-desc">{{ v.vendedorNombre }}</td>
                 <td>{{ v.cantidad }}{{ v.cantidadCombo > 0 ? ' (combo: ' + v.cantidadCombo + ')' : '' }}</td>
                 <td class="celda-monto">{{ v.monto | number: '1.2-2' }}</td>
-                <td>{{ v.metodoPago === 'EFECTIVO' ? 'Efectivo' : 'Transferencia' }}</td>
+                <td>{{ v.metodoPago === 'EFECTIVO' ? 'Efectivo' : v.metodoPago === 'TRANSFERENCIA' ? 'Transferencia' : 'Mixto' }}</td>
                 <td class="celda-fecha">{{ v.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
                 <td class="acciones-celda">
                   <button type="button" class="btn-borrar" (click)="borrarVenta(v)">Anular</button>
