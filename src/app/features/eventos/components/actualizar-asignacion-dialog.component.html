@@ -46,8 +46,9 @@
       </div>
       @if (tieneCombo()) {
         <div class="campo">
-          <label for="cantidadVendidaCombo">Vendidas en combo</label>
-          <input id="cantidadVendidaCombo" type="number" min="0" formControlName="cantidadVendidaCombo" class="input-plain" />
+          <label for="cantidadCombosVendidos">Combos vendidos</label>
+          <input id="cantidadCombosVendidos" type="number" min="0" formControlName="cantidadCombosVendidos" class="input-plain" />
+          <span class="hint">= {{ entradasDeCombo() }} entrada(s)</span>
         </div>
       } @else {
         <div class="campo">

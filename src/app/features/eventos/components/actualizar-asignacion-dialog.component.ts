@@ -39,7 +39,7 @@ export class ActualizarAsignacionDialogComponent {
     carrera: [''],
     cantidadAsignada: ['0', [Validators.required, Validators.pattern(/^[1-9]\d*$/)]],
     cantidadVendidaIndividual: ['0', [Validators.required, Validators.pattern(/^\d+$/)]],
-    cantidadVendidaCombo: ['0', [Validators.pattern(/^\d+$/)]],
+    cantidadCombosVendidos: ['0', [Validators.pattern(/^\d+$/)]],
     cantidadDevuelta: ['0', [Validators.required, Validators.pattern(/^\d+$/)]],
     dineroRecibido: ['0', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
   });
@@ -51,9 +51,14 @@ export class ActualizarAsignacionDialogComponent {
       }
       this.errorMensaje.set('');
       const a = this.asignacion();
+      const tipo = this.tipoEntrada();
       this.metodoPago.set(a?.metodoPago ?? 'EFECTIVO');
-      const vendidaCombo = a?.cantidadVendidaCombo ?? 0;
-      const vendidaIndividual = (a?.cantidadVendida ?? 0) - vendidaCombo;
+      // cantidadVendidaCombo viaja en entradas (consistente con cantidadAsignada/
+      // cantidadVendida); acá se convierte a combos para que el campo sea lo que
+      // el vendedor realmente contó.
+      const vendidaComboEntradas = a?.cantidadVendidaCombo ?? 0;
+      const combosVendidos = tipo?.cantidadCombo ? Math.round(vendidaComboEntradas / tipo.cantidadCombo) : 0;
+      const vendidaIndividual = (a?.cantidadVendida ?? 0) - vendidaComboEntradas;
       this.form.reset({
         nombreReferencia: a?.nombreReferencia ?? '',
         telefono: a?.telefono ?? '',
@@ -61,7 +66,7 @@ export class ActualizarAsignacionDialogComponent {
         carrera: a?.carrera ?? '',
         cantidadAsignada: String(a?.cantidadAsignada ?? 0),
         cantidadVendidaIndividual: String(vendidaIndividual),
-        cantidadVendidaCombo: String(vendidaCombo),
+        cantidadCombosVendidos: String(combosVendidos),
         cantidadDevuelta: String(a?.cantidadDevuelta ?? 0),
         dineroRecibido: a?.dineroRecibido ? String(a.dineroRecibido) : '0',
       });
@@ -70,14 +75,20 @@ export class ActualizarAsignacionDialogComponent {
 
   // Plain method (no computed()) — lee valores de reactive-forms, que no son
   // signals, junto con el signal tipoEntrada().
+  entradasDeCombo(): number {
+    const tipo = this.tipoEntrada();
+    const combos = Number(this.form.getRawValue().cantidadCombosVendidos) || 0;
+    return tipo?.cantidadCombo ? combos * tipo.cantidadCombo : 0;
+  }
+
   dineroSugerido(): number {
     const tipo = this.tipoEntrada();
     if (!tipo) return 0;
-    const { cantidadVendidaIndividual, cantidadVendidaCombo } = this.form.getRawValue();
+    const { cantidadVendidaIndividual, cantidadCombosVendidos } = this.form.getRawValue();
     const individual = Number(cantidadVendidaIndividual) || 0;
-    const combo = Number(cantidadVendidaCombo) || 0;
+    const combos = Number(cantidadCombosVendidos) || 0;
     const totalIndividual = individual * tipo.precio;
-    const totalCombo = tipo.precioCombo && tipo.cantidadCombo ? (combo / tipo.cantidadCombo) * tipo.precioCombo : 0;
+    const totalCombo = tipo.precioCombo ? combos * tipo.precioCombo : 0;
     return redondearDinero(totalIndividual + totalCombo);
   }
 
@@ -113,13 +124,15 @@ export class ActualizarAsignacionDialogComponent {
       carrera,
       cantidadAsignada,
       cantidadVendidaIndividual,
-      cantidadVendidaCombo,
+      cantidadCombosVendidos,
       cantidadDevuelta,
       dineroRecibido,
     } = this.form.getRawValue();
     const dinero = Number(dineroRecibido);
-    const vendidaCombo = Number(cantidadVendidaCombo) || 0;
-    const cantidadVendida = (Number(cantidadVendidaIndividual) || 0) + vendidaCombo;
+    const tipo = this.tipoEntrada();
+    const combosVendidos = Number(cantidadCombosVendidos) || 0;
+    const vendidaComboEntradas = tipo?.cantidadCombo ? combosVendidos * tipo.cantidadCombo : 0;
+    const cantidadVendida = (Number(cantidadVendidaIndividual) || 0) + vendidaComboEntradas;
 
     this.eventosService
       .actualizarAsignacion(a.id, {
@@ -129,7 +142,7 @@ export class ActualizarAsignacionDialogComponent {
         carrera: carrera.trim() || null,
         cantidadAsignada: Number(cantidadAsignada),
         cantidadVendida,
-        cantidadVendidaCombo: vendidaCombo,
+        cantidadVendidaCombo: vendidaComboEntradas,
         cantidadDevuelta: Number(cantidadDevuelta),
         dineroRecibido: dinero,
         ...(dinero > 0 ? { metodoPago: this.metodoPago() } : {}),
