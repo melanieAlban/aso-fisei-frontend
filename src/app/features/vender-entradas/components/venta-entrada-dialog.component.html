@@ -35,10 +35,31 @@
     <div class="campo">
       <label>Método de pago</label>
       <div class="toggle-row">
-        <button type="button" class="toggle" [class.active]="metodoPago() === 'EFECTIVO'" (click)="elegirEfectivo()">Efectivo</button>
-        <button type="button" class="toggle" [class.active]="metodoPago() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">Transferencia</button>
+        <button type="button" class="toggle" [class.active]="modoPago() === 'EFECTIVO'" (click)="elegirEfectivo()">Efectivo</button>
+        <button type="button" class="toggle" [class.active]="modoPago() === 'TRANSFERENCIA'" (click)="elegirTransferencia()">Transferencia</button>
+        <button type="button" class="toggle" [class.active]="modoPago() === 'MIXTO'" (click)="elegirMixto()">Mixto</button>
       </div>
     </div>
+
+    @if (modoPago() === 'MIXTO') {
+      <div class="pago-grid">
+        <div>
+          <div class="mini-label">Efectivo</div>
+          <div class="campo-monto">
+            <span>$</span>
+            <input type="text" inputmode="decimal" [value]="montoEfectivoMixto()" (input)="montoEfectivoMixto.set($any($event.target).value)" placeholder="0.00" />
+          </div>
+        </div>
+        <div>
+          <div class="mini-label">Transferencia</div>
+          <div class="campo-monto">
+            <span>$</span>
+            <input type="text" inputmode="decimal" [value]="montoTransferenciaMixto()" (input)="montoTransferenciaMixto.set($any($event.target).value)" placeholder="0.00" />
+          </div>
+        </div>
+      </div>
+      <p class="hint">Efectivo + Transferencia debe sumar exactamente el total ({{ montoSugerido() | number: '1.2-2' }}).</p>
+    }
 
     <div class="total-row">
       <span>Total</span>
@@ -51,7 +72,7 @@
 
     <div class="acciones">
       <p-button label="Cancelar" severity="secondary" [text]="true" type="button" (onClick)="cerrar()" />
-      <p-button label="Vender" [loading]="cargando()" [disabled]="form.invalid" type="submit" />
+      <p-button label="Vender" [loading]="cargando()" [disabled]="bloqueado()" type="submit" />
     </div>
   </form>
 </p-dialog>

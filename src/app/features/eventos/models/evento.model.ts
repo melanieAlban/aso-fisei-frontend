@@ -53,7 +53,10 @@ export interface VentaEntrada {
   cantidad: number;
   cantidadCombo: number;
   monto: number;
-  metodoPago: MetodoPagoEvento;
+  // null = pago mixto (ver montoEfectivo/montoTransferencia).
+  metodoPago: MetodoPagoEvento | null;
+  montoEfectivo: number;
+  montoTransferencia: number;
   fecha: string;
 }
 

@@ -5,9 +5,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { DisponibilidadTipoEntrada, MetodoPagoEvento } from '../../eventos/models/evento.model';
+import { DisponibilidadTipoEntrada } from '../../eventos/models/evento.model';
 import { EventosService } from '../../eventos/services/eventos.service';
-import { redondearDinero } from '../../../shared/utils/dinero.util';
+import { aCentavosDinero, redondearDinero } from '../../../shared/utils/dinero.util';
+
+type ModoPago = 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
 
 @Component({
   selector: 'app-venta-entrada-dialog',
@@ -28,7 +30,9 @@ export class VentaEntradaDialogComponent {
   readonly cargando = signal(false);
   readonly errorMensaje = signal('');
   readonly esCombo = signal(false);
-  readonly metodoPago = signal<MetodoPagoEvento>('EFECTIVO');
+  readonly modoPago = signal<ModoPago>('EFECTIVO');
+  readonly montoEfectivoMixto = signal('');
+  readonly montoTransferenciaMixto = signal('');
 
   readonly tieneCombo = computed(() => {
     const t = this.item()?.tipoEntrada;
@@ -39,20 +43,45 @@ export class VentaEntradaDialogComponent {
     cantidad: ['1', [Validators.required, Validators.pattern(/^[1-9]\d*$/)]],
   });
 
-  readonly montoSugerido = computed(() => {
+  // Metodos planos (no computed()) — leen form.controls.cantidad.value, que no
+  // es una signal, asi que un computed() no se vuelve a evaluar al escribir.
+  montoSugerido(): number {
     const t = this.item()?.tipoEntrada;
     if (!t) return 0;
     const cantidad = Number(this.form.controls.cantidad.value) || 0;
     const precio = this.esCombo() ? (t.precioCombo ?? 0) : t.precio;
     return redondearDinero(cantidad * precio);
-  });
+  }
 
-  readonly entradasResultantes = computed(() => {
+  entradasResultantes(): number {
     const t = this.item()?.tipoEntrada;
     if (!t) return 0;
     const cantidad = Number(this.form.controls.cantidad.value) || 0;
     return this.esCombo() ? cantidad * (t.cantidadCombo ?? 0) : cantidad;
-  });
+  }
+
+  // Montos que realmente se registrarán, según el modo de pago elegido.
+  montosPago(): { montoEfectivo: number; montoTransferencia: number } {
+    const total = this.montoSugerido();
+    switch (this.modoPago()) {
+      case 'EFECTIVO':
+        return { montoEfectivo: total, montoTransferencia: 0 };
+      case 'TRANSFERENCIA':
+        return { montoEfectivo: 0, montoTransferencia: total };
+      case 'MIXTO':
+        return {
+          montoEfectivo: parseFloat(this.montoEfectivoMixto()) || 0,
+          montoTransferencia: parseFloat(this.montoTransferenciaMixto()) || 0,
+        };
+    }
+  }
+
+  bloqueado(): boolean {
+    if (this.form.invalid || this.cargando()) return true;
+    if (this.modoPago() !== 'MIXTO') return false;
+    const { montoEfectivo, montoTransferencia } = this.montosPago();
+    return aCentavosDinero(montoEfectivo) + aCentavosDinero(montoTransferencia) !== aCentavosDinero(this.montoSugerido());
+  }
 
   constructor() {
     effect(() => {
@@ -61,7 +90,9 @@ export class VentaEntradaDialogComponent {
       }
       this.errorMensaje.set('');
       this.esCombo.set(false);
-      this.metodoPago.set('EFECTIVO');
+      this.modoPago.set('EFECTIVO');
+      this.montoEfectivoMixto.set('');
+      this.montoTransferenciaMixto.set('');
       this.form.reset({ cantidad: '1' });
     });
   }
@@ -75,11 +106,15 @@ export class VentaEntradaDialogComponent {
   }
 
   elegirEfectivo(): void {
-    this.metodoPago.set('EFECTIVO');
+    this.modoPago.set('EFECTIVO');
   }
 
   elegirTransferencia(): void {
-    this.metodoPago.set('TRANSFERENCIA');
+    this.modoPago.set('TRANSFERENCIA');
+  }
+
+  elegirMixto(): void {
+    this.modoPago.set('MIXTO');
   }
 
   cerrar(): void {
@@ -88,7 +123,7 @@ export class VentaEntradaDialogComponent {
 
   guardar(): void {
     const item = this.item();
-    if (this.form.invalid || !item) {
+    if (this.bloqueado() || !item) {
       this.form.markAllAsTouched();
       return;
     }
@@ -105,7 +140,7 @@ export class VentaEntradaDialogComponent {
       .registrarVentaEntrada(this.eventoId(), item.tipoEntrada.id, {
         cantidad: Number(cantidad),
         esCombo: this.esCombo(),
-        metodoPago: this.metodoPago(),
+        ...this.montosPago(),
       })
       .subscribe({
         next: () => {
