@@ -29,6 +29,19 @@ import {
   MovimientoEventoEditable,
   TipoMovimientoEvento,
 } from '../components/movimiento-evento-dialog.component';
+import { redondearDinero } from '../../../shared/utils/dinero.util';
+
+type FiltroMetodoVentas = '' | 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
+
+interface FilaVentaResumen {
+  origen: 'Directa' | 'Asignación';
+  descripcion: string;
+  monto: number;
+  montoEfectivo: number;
+  montoTransferencia: number;
+  metodoPago: 'EFECTIVO' | 'TRANSFERENCIA' | null;
+  fecha: string;
+}
 
 @Component({
   selector: 'app-evento-detalle',
@@ -98,6 +111,58 @@ export class EventoDetalleComponent implements OnInit {
   readonly compromisoVisible = signal(false);
   readonly abonarCompromisoVisible = signal(false);
   readonly compromisoSeleccionado = signal<CompromisoPagoEvento | null>(null);
+
+  readonly filtroMetodoVentas = signal<FiltroMetodoVentas>('');
+
+  // Junta ventas directas de entradas + dinero reportado por vendedores en
+  // asignaciones, para tener un resumen combinado de todo lo vendido.
+  readonly todasLasVentas = computed<FilaVentaResumen[]>(() => {
+    const directas: FilaVentaResumen[] = this.ventasEntrada().map((v) => ({
+      origen: 'Directa',
+      descripcion: `${this.nombreTipoEntrada(v.tipoEntradaId)} x${v.cantidad}${v.cantidadCombo > 0 ? ' (combo)' : ''}`,
+      monto: v.monto,
+      montoEfectivo: v.montoEfectivo,
+      montoTransferencia: v.montoTransferencia,
+      metodoPago: v.metodoPago,
+      fecha: v.fecha,
+    }));
+    const deAsignaciones: FilaVentaResumen[] = this.asignaciones()
+      .filter((a) => a.dineroRecibido > 0)
+      .map((a) => ({
+        origen: 'Asignación',
+        descripcion: a.nombreReferencia,
+        monto: a.dineroRecibido,
+        montoEfectivo: a.montoEfectivo,
+        montoTransferencia: a.montoTransferencia,
+        metodoPago: a.metodoPago,
+        fecha: a.fecha,
+      }));
+    return [...directas, ...deAsignaciones].sort(
+      (x, y) => new Date(y.fecha).getTime() - new Date(x.fecha).getTime(),
+    );
+  });
+
+  readonly ventasFiltradas = computed<FilaVentaResumen[]>(() => {
+    const filtro = this.filtroMetodoVentas();
+    const todas = this.todasLasVentas();
+    if (!filtro) return todas;
+    if (filtro === 'MIXTO') return todas.filter((v) => v.metodoPago === null);
+    return todas.filter((v) => v.metodoPago === filtro);
+  });
+
+  readonly totalVentasFiltradas = computed(() =>
+    redondearDinero(this.ventasFiltradas().reduce((acc, v) => acc + v.monto, 0)),
+  );
+  readonly totalEfectivoFiltrado = computed(() =>
+    redondearDinero(this.ventasFiltradas().reduce((acc, v) => acc + v.montoEfectivo, 0)),
+  );
+  readonly totalTransferenciaFiltrado = computed(() =>
+    redondearDinero(this.ventasFiltradas().reduce((acc, v) => acc + v.montoTransferencia, 0)),
+  );
+
+  onFiltroMetodoVentas(valor: string): void {
+    this.filtroMetodoVentas.set(valor as FiltroMetodoVentas);
+  }
 
   ngOnInit(): void {
     this.cargarTodo();
@@ -314,7 +379,13 @@ export class EventoDetalleComponent implements OnInit {
         String(a.cantidadVendidaCombo),
         String(a.cantidadDevuelta),
         a.dineroRecibido.toFixed(2),
-        a.metodoPago === 'EFECTIVO' ? 'Efectivo' : a.metodoPago === 'TRANSFERENCIA' ? 'Transferencia' : '',
+        a.metodoPago === 'EFECTIVO'
+          ? 'Efectivo'
+          : a.metodoPago === 'TRANSFERENCIA'
+            ? 'Transferencia'
+            : a.dineroRecibido > 0
+              ? 'Mixto'
+              : '',
       ]
         .map(escaparCsv)
         .join(';');

@@ -41,7 +41,10 @@ export interface AsignacionEntradas {
   cantidadVendidaCombo: number;
   cantidadDevuelta: number;
   dineroRecibido: number;
+  // null = pago mixto (ver montoEfectivo/montoTransferencia) o nada reportado aun.
   metodoPago: MetodoPagoEvento | null;
+  montoEfectivo: number;
+  montoTransferencia: number;
   fecha: string;
 }
 
