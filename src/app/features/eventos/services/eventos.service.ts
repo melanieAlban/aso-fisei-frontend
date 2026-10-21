@@ -206,7 +206,8 @@ export class EventosService {
       cantidadVendidaCombo?: number;
       cantidadDevuelta?: number;
       dineroRecibido?: number;
-      metodoPago?: MetodoPagoEvento;
+      montoEfectivo?: number;
+      montoTransferencia?: number;
     },
   ): Observable<RespuestaEstandar<AsignacionEntradas>> {
     return this.api.patch<RespuestaEstandar<AsignacionEntradas>>(`/ticket-assignments/${id}`, datos).pipe(

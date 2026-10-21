@@ -59,6 +59,62 @@
 
     <section class="bloque">
       <div class="bloque-header">
+        <h2>Resumen de ventas</h2>
+        <p class="bloque-subtitulo">Ventas directas + dinero reportado en asignaciones</p>
+      </div>
+
+      <div class="filtro-pago">
+        <label for="filtroMetodoVentas">Método de pago</label>
+        <select id="filtroMetodoVentas" [value]="filtroMetodoVentas()" (change)="onFiltroMetodoVentas($any($event.target).value)">
+          <option value="">Todos</option>
+          <option value="EFECTIVO">Efectivo</option>
+          <option value="TRANSFERENCIA">Transferencia</option>
+          <option value="MIXTO">Mixto</option>
+        </select>
+      </div>
+
+      <div class="resumen resumen-ventas">
+        <div class="tarjeta">
+          <span class="etiqueta">Total</span>
+          <span class="valor">{{ totalVentasFiltradas() | number: '1.2-2' }}</span>
+        </div>
+        <div class="tarjeta">
+          <span class="etiqueta">Total efectivo</span>
+          <span class="valor">{{ totalEfectivoFiltrado() | number: '1.2-2' }}</span>
+        </div>
+        <div class="tarjeta">
+          <span class="etiqueta">Total transferencia</span>
+          <span class="valor">{{ totalTransferenciaFiltrado() | number: '1.2-2' }}</span>
+        </div>
+      </div>
+
+      <p-table [value]="ventasFiltradas()" dataKey="descripcion" class="tabla">
+        <ng-template #header>
+          <tr>
+            <th>Origen</th>
+            <th>Descripción</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Fecha</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-v>
+          <tr>
+            <td>{{ v.origen }}</td>
+            <td class="celda-desc">{{ v.descripcion }}</td>
+            <td class="celda-monto">{{ v.monto | number: '1.2-2' }}</td>
+            <td>{{ v.metodoPago === 'EFECTIVO' ? 'Efectivo' : v.metodoPago === 'TRANSFERENCIA' ? 'Transferencia' : 'Mixto' }}</td>
+            <td class="celda-fecha">{{ v.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+          <tr><td colspan="5" class="vacio">No hay ventas que coincidan con el filtro.</td></tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <section class="bloque">
+      <div class="bloque-header">
         <h2>Compromisos de pago</h2>
         <p class="bloque-subtitulo">Ej. el alquiler del lugar: cuánto cuesta en total y cuánto ya se ha pagado</p>
         @if (esActivo()) {

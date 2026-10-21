@@ -47,6 +47,23 @@
   }
 }
 
+.pago-grid {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+
+  > div {
+    flex: 1;
+  }
+}
+
+.mini-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #9aa2b1;
+  margin-bottom: 5px;
+}
+
 .campo-monto {
   display: flex;
   align-items: center;

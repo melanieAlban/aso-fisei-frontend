@@ -5,9 +5,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { AsignacionEntradas, CARRERAS_FISEI, MetodoPagoEvento, TipoEntrada } from '../models/evento.model';
+import { AsignacionEntradas, CARRERAS_FISEI, TipoEntrada } from '../models/evento.model';
 import { EventosService } from '../services/eventos.service';
-import { redondearDinero } from '../../../shared/utils/dinero.util';
+import { aCentavosDinero, redondearDinero } from '../../../shared/utils/dinero.util';
+
+type ModoPago = 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
 
 @Component({
   selector: 'app-actualizar-asignacion-dialog',
@@ -28,7 +30,9 @@ export class ActualizarAsignacionDialogComponent {
 
   readonly cargando = signal(false);
   readonly errorMensaje = signal('');
-  readonly metodoPago = signal<MetodoPagoEvento>('EFECTIVO');
+  readonly modoPago = signal<ModoPago>('EFECTIVO');
+  readonly montoEfectivoMixto = signal('');
+  readonly montoTransferenciaMixto = signal('');
 
   readonly tieneCombo = () => !!(this.tipoEntrada()?.precioCombo && this.tipoEntrada()?.cantidadCombo);
 
@@ -52,7 +56,18 @@ export class ActualizarAsignacionDialogComponent {
       this.errorMensaje.set('');
       const a = this.asignacion();
       const tipo = this.tipoEntrada();
-      this.metodoPago.set(a?.metodoPago ?? 'EFECTIVO');
+      // metodoPago null + dinero recibido > 0 significa pago mixto (ver
+      // montoEfectivo/montoTransferencia); si no hay nada recibido se deja
+      // Efectivo por defecto.
+      if (a && a.metodoPago === null && a.dineroRecibido > 0) {
+        this.modoPago.set('MIXTO');
+        this.montoEfectivoMixto.set(a.montoEfectivo ? String(a.montoEfectivo) : '');
+        this.montoTransferenciaMixto.set(a.montoTransferencia ? String(a.montoTransferencia) : '');
+      } else {
+        this.modoPago.set(a?.metodoPago ?? 'EFECTIVO');
+        this.montoEfectivoMixto.set('');
+        this.montoTransferenciaMixto.set('');
+      }
       // cantidadVendidaCombo viaja en entradas (consistente con cantidadAsignada/
       // cantidadVendida); acá se convierte a combos para que el campo sea lo que
       // el vendedor realmente contó.
@@ -96,12 +111,40 @@ export class ActualizarAsignacionDialogComponent {
     this.form.controls.dineroRecibido.setValue(this.dineroSugerido().toFixed(2));
   }
 
+  // Montos que realmente se registrarán, según el modo de pago elegido.
+  montosPago(): { montoEfectivo: number; montoTransferencia: number } {
+    const dinero = Number(this.form.controls.dineroRecibido.value) || 0;
+    switch (this.modoPago()) {
+      case 'EFECTIVO':
+        return { montoEfectivo: dinero, montoTransferencia: 0 };
+      case 'TRANSFERENCIA':
+        return { montoEfectivo: 0, montoTransferencia: dinero };
+      case 'MIXTO':
+        return {
+          montoEfectivo: Number(this.montoEfectivoMixto()) || 0,
+          montoTransferencia: Number(this.montoTransferenciaMixto()) || 0,
+        };
+    }
+  }
+
+  bloqueado(): boolean {
+    if (this.form.invalid || this.cargando()) return true;
+    const dinero = Number(this.form.controls.dineroRecibido.value) || 0;
+    if (dinero === 0 || this.modoPago() !== 'MIXTO') return false;
+    const { montoEfectivo, montoTransferencia } = this.montosPago();
+    return aCentavosDinero(montoEfectivo) + aCentavosDinero(montoTransferencia) !== aCentavosDinero(dinero);
+  }
+
   elegirEfectivo(): void {
-    this.metodoPago.set('EFECTIVO');
+    this.modoPago.set('EFECTIVO');
   }
 
   elegirTransferencia(): void {
-    this.metodoPago.set('TRANSFERENCIA');
+    this.modoPago.set('TRANSFERENCIA');
+  }
+
+  elegirMixto(): void {
+    this.modoPago.set('MIXTO');
   }
 
   cerrar(): void {
@@ -110,7 +153,7 @@ export class ActualizarAsignacionDialogComponent {
 
   guardar(): void {
     const a = this.asignacion();
-    if (this.form.invalid || !a) {
+    if (this.bloqueado() || !a) {
       this.form.markAllAsTouched();
       return;
     }
@@ -145,7 +188,7 @@ export class ActualizarAsignacionDialogComponent {
         cantidadVendidaCombo: vendidaComboEntradas,
         cantidadDevuelta: Number(cantidadDevuelta),
         dineroRecibido: dinero,
-        ...(dinero > 0 ? { metodoPago: this.metodoPago() } : {}),
+        ...(dinero > 0 ? this.montosPago() : {}),
       })
       .subscribe({
         next: () => {
