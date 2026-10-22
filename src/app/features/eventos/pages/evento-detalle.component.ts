@@ -105,6 +105,40 @@ export class EventoDetalleComponent implements OnInit {
     return this.tiposEntrada().find((t) => t.id === asignacion.tipoEntradaId) ?? null;
   });
 
+  // Checklist "¿ya me entregó?" por asignación — solo a nivel de frontend
+  // (localStorage), no viaja al backend ni a otros dispositivos/usuarios.
+  private readonly claveEntregados = `asignaciones-entregadas-${this.eventoId}`;
+  readonly entregados = signal<Set<string>>(this.leerEntregadosGuardados());
+
+  private leerEntregadosGuardados(): Set<string> {
+    try {
+      const guardado = localStorage.getItem(this.claveEntregados);
+      return guardado ? new Set(JSON.parse(guardado)) : new Set();
+    } catch {
+      return new Set();
+    }
+  }
+
+  estaEntregado(asignacionId: string): boolean {
+    return this.entregados().has(asignacionId);
+  }
+
+  toggleEntregado(asignacionId: string): void {
+    const actual = new Set(this.entregados());
+    if (actual.has(asignacionId)) {
+      actual.delete(asignacionId);
+    } else {
+      actual.add(asignacionId);
+    }
+    this.entregados.set(actual);
+    try {
+      localStorage.setItem(this.claveEntregados, JSON.stringify([...actual]));
+    } catch {
+      // localStorage no disponible (modo privado, etc.) — el checklist
+      // igual funciona durante la sesión, solo no persiste.
+    }
+  }
+
   readonly movimientoVisible = signal(false);
   readonly movimientoTipo = signal<TipoMovimientoEvento>('ingreso');
   readonly movimientoSeleccionado = signal<MovimientoEventoEditable | null>(null);

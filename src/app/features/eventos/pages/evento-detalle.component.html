@@ -220,6 +220,7 @@
         <p-table [value]="asignaciones()" dataKey="id" class="tabla">
           <ng-template #header>
             <tr>
+              <th></th>
               <th>Nombre</th>
               <th>Teléfono</th>
               <th>Semestre</th>
@@ -234,7 +235,15 @@
             </tr>
           </ng-template>
           <ng-template #body let-a>
-            <tr>
+            <tr [class.fila-entregada]="estaEntregado(a.id)">
+              <td class="celda-check">
+                <input
+                  type="checkbox"
+                  [checked]="estaEntregado(a.id)"
+                  (change)="toggleEntregado(a.id)"
+                  title="¿Ya me entregó?"
+                />
+              </td>
               <td class="celda-desc">{{ a.nombreReferencia }}</td>
               <td>{{ a.telefono || '—' }}</td>
               <td>{{ a.semestre || '—' }}</td>
@@ -254,7 +263,7 @@
             </tr>
           </ng-template>
           <ng-template #emptymessage>
-            <tr><td colspan="11" class="vacio">Todavía no hay asignaciones de entradas.</td></tr>
+            <tr><td colspan="12" class="vacio">Todavía no hay asignaciones de entradas.</td></tr>
           </ng-template>
         </p-table>
       </div>
