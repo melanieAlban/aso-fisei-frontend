@@ -204,6 +204,26 @@
   font-weight: 700;
 }
 
+.celda-check {
+  width: 36px;
+  text-align: center;
+
+  input[type='checkbox'] {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    accent-color: #12d897;
+  }
+}
+
+.fila-entregada {
+  background: rgba(18, 216, 151, 0.06);
+
+  .celda-desc {
+    color: #0a7d58;
+  }
+}
+
 .celda-monto {
   font-size: 13.5px;
   font-weight: 800;
