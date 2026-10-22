@@ -35,6 +35,7 @@ type FiltroMetodoVentas = '' | 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
 
 interface FilaVentaResumen {
   origen: 'Directa' | 'Asignación';
+  tipoEntradaId: string;
   descripcion: string;
   monto: number;
   montoEfectivo: number;
@@ -113,12 +114,14 @@ export class EventoDetalleComponent implements OnInit {
   readonly compromisoSeleccionado = signal<CompromisoPagoEvento | null>(null);
 
   readonly filtroMetodoVentas = signal<FiltroMetodoVentas>('');
+  readonly filtroTipoVentas = signal<string>('');
 
   // Junta ventas directas de entradas + dinero reportado por vendedores en
   // asignaciones, para tener un resumen combinado de todo lo vendido.
   readonly todasLasVentas = computed<FilaVentaResumen[]>(() => {
     const directas: FilaVentaResumen[] = this.ventasEntrada().map((v) => ({
       origen: 'Directa',
+      tipoEntradaId: v.tipoEntradaId,
       descripcion: `${this.nombreTipoEntrada(v.tipoEntradaId)} x${v.cantidad}${v.cantidadCombo > 0 ? ' (combo)' : ''}`,
       monto: v.monto,
       montoEfectivo: v.montoEfectivo,
@@ -130,6 +133,7 @@ export class EventoDetalleComponent implements OnInit {
       .filter((a) => a.dineroRecibido > 0)
       .map((a) => ({
         origen: 'Asignación',
+        tipoEntradaId: a.tipoEntradaId,
         descripcion: a.nombreReferencia,
         monto: a.dineroRecibido,
         montoEfectivo: a.montoEfectivo,
@@ -143,11 +147,18 @@ export class EventoDetalleComponent implements OnInit {
   });
 
   readonly ventasFiltradas = computed<FilaVentaResumen[]>(() => {
-    const filtro = this.filtroMetodoVentas();
-    const todas = this.todasLasVentas();
-    if (!filtro) return todas;
-    if (filtro === 'MIXTO') return todas.filter((v) => v.metodoPago === null);
-    return todas.filter((v) => v.metodoPago === filtro);
+    const filtroMetodo = this.filtroMetodoVentas();
+    const filtroTipo = this.filtroTipoVentas();
+    let resultado = this.todasLasVentas();
+    if (filtroMetodo === 'MIXTO') {
+      resultado = resultado.filter((v) => v.metodoPago === null);
+    } else if (filtroMetodo) {
+      resultado = resultado.filter((v) => v.metodoPago === filtroMetodo);
+    }
+    if (filtroTipo) {
+      resultado = resultado.filter((v) => v.tipoEntradaId === filtroTipo);
+    }
+    return resultado;
   });
 
   readonly totalVentasFiltradas = computed(() =>
@@ -162,6 +173,10 @@ export class EventoDetalleComponent implements OnInit {
 
   onFiltroMetodoVentas(valor: string): void {
     this.filtroMetodoVentas.set(valor as FiltroMetodoVentas);
+  }
+
+  onFiltroTipoVentas(valor: string): void {
+    this.filtroTipoVentas.set(valor);
   }
 
   ngOnInit(): void {
