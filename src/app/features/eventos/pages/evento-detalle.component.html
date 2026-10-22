@@ -64,13 +64,24 @@
       </div>
 
       <div class="filtro-pago">
-        <label for="filtroMetodoVentas">Método de pago</label>
-        <select id="filtroMetodoVentas" [value]="filtroMetodoVentas()" (change)="onFiltroMetodoVentas($any($event.target).value)">
-          <option value="">Todos</option>
-          <option value="EFECTIVO">Efectivo</option>
-          <option value="TRANSFERENCIA">Transferencia</option>
-          <option value="MIXTO">Mixto</option>
-        </select>
+        <div>
+          <label for="filtroTipoVentas">Tipo de entrada</label>
+          <select id="filtroTipoVentas" [value]="filtroTipoVentas()" (change)="onFiltroTipoVentas($any($event.target).value)">
+            <option value="">Todos</option>
+            @for (t of tiposEntrada(); track t.id) {
+              <option [value]="t.id">{{ t.nombre }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label for="filtroMetodoVentas">Método de pago</label>
+          <select id="filtroMetodoVentas" [value]="filtroMetodoVentas()" (change)="onFiltroMetodoVentas($any($event.target).value)">
+            <option value="">Todos</option>
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="TRANSFERENCIA">Transferencia</option>
+            <option value="MIXTO">Mixto</option>
+          </select>
+        </div>
       </div>
 
       <div class="resumen resumen-ventas">
