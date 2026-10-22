@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { AsignacionEntradas, CARRERAS_FISEI, TipoEntrada } from '../models/evento.model';
 import { EventosService } from '../services/eventos.service';
-import { aCentavosDinero, redondearDinero } from '../../../shared/utils/dinero.util';
+import { redondearDinero } from '../../../shared/utils/dinero.util';
 
 type ModoPago = 'EFECTIVO' | 'TRANSFERENCIA' | 'MIXTO';
 
@@ -127,12 +127,11 @@ export class ActualizarAsignacionDialogComponent {
     }
   }
 
+  // El desglose efectivo/transferencia es un dato libre (quien registra puede
+  // cobrar distinto, dar vuelto, etc.) — no se exige que sume exacto al
+  // dinero recibido, solo se avisa con el hint en el HTML.
   bloqueado(): boolean {
-    if (this.form.invalid || this.cargando()) return true;
-    const dinero = Number(this.form.controls.dineroRecibido.value) || 0;
-    if (dinero === 0 || this.modoPago() !== 'MIXTO') return false;
-    const { montoEfectivo, montoTransferencia } = this.montosPago();
-    return aCentavosDinero(montoEfectivo) + aCentavosDinero(montoTransferencia) !== aCentavosDinero(dinero);
+    return this.form.invalid || this.cargando();
   }
 
   elegirEfectivo(): void {
